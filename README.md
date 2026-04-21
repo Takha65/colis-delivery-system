@@ -72,4 +72,6 @@ poetry run pytest
 
 ## Auteur
 
+Mamadou Mountaha Mbacke Ndoye
 Projet realise dans le cadre du cours IFT785 - Hiver 2026.
+Universite de Sherbrooke

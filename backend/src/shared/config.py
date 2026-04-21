@@ -1,4 +1,5 @@
 """Configuration centralisee de l'application."""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,7 +16,7 @@ class Settings(BaseSettings):
 
     # Nominatim API
     nominatim_base_url: str = "https://nominatim.openstreetmap.org"
-    nominatim_user_agent: str = "ColisDeliverySystem/0.1 (etudiant@usherbrooke.ca)"
+    nominatim_user_agent: str = "ColisDeliverySystem/0.1 (MXXX@USherbrooke.ca)"
     nominatim_timeout_seconds: int = 10
 
     # API
