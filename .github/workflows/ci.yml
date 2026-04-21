@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend-quality:
+    name: Backend - Lint & Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: |
+          pip install poetry==1.8.3
+          poetry config virtualenvs.create false
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+
+      - name: Check formatting with black
+        run: poetry run black --check src/ tests/ main.py
+
+      - name: Lint with pylint
+        run: poetry run pylint src/ main.py --fail-under=8.0
+        continue-on-error: true
+
+      - name: Complexity with radon
+        run: |
+          poetry run radon cc src/ -a -nb
+          poetry run radon mi src/ -nb
+
+      - name: Run tests with coverage
+        run: poetry run pytest
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: backend/htmlcov/
