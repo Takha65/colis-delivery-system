@@ -4,42 +4,25 @@ from datetime import datetime, timezone
 from enum import Enum
 from uuid import UUID, uuid4
 
-from src.domain.exceptions import InvalidTransitionError
+from src.domain.entities.historique_statut import HistoriqueStatut
+from src.domain.states import ColisCree, ColisState, etat_depuis_nom
 from src.domain.value_objects import Adresse, Dimensions, Poids, TrackingNumber
 
 
-class StatutColis(str, Enum):
-    """Statuts possibles d'un colis dans son cycle de vie."""
-
-    CREE = "CREE"
-    EN_TRANSIT = "EN_TRANSIT"
-    LIVRE = "LIVRE"
-    CONFIRME = "CONFIRME"
-
-
 class TypeColis(str, Enum):
-    """Types de colis, determinent les contraintes applicables."""
+    """Types de colis (determinent les contraintes applicables)."""
 
     STANDARD = "STANDARD"
     FRAGILE = "FRAGILE"
     EXPRESS = "EXPRESS"
 
 
-# Transitions valides dans le cycle de vie
-TRANSITIONS_VALIDES: dict[StatutColis, set[StatutColis]] = {
-    StatutColis.CREE: {StatutColis.EN_TRANSIT},
-    StatutColis.EN_TRANSIT: {StatutColis.LIVRE},
-    StatutColis.LIVRE: {StatutColis.CONFIRME},
-    StatutColis.CONFIRME: set(),  # Etat final
-}
-
-
 @dataclass
 class Colis:
     """Entite representant un colis a livrer.
 
-    Un colis passe par plusieurs statuts :
-    CREE -> EN_TRANSIT -> LIVRE -> CONFIRME
+    L'etat du colis est gere par le pattern State (voir domain/states/).
+    Chaque transition cree une entree dans l'historique.
     """
 
     tracking_number: TrackingNumber
@@ -48,33 +31,45 @@ class Colis:
     adresse_origine: Adresse
     adresse_destination: Adresse
     type_colis: TypeColis = TypeColis.STANDARD
-    statut: StatutColis = StatutColis.CREE
+    etat: ColisState = field(default_factory=ColisCree)
     id: UUID = field(default_factory=uuid4)
     date_creation: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
+    historique: list[HistoriqueStatut] = field(default_factory=list)
 
-    def peut_transiter_vers(self, nouveau_statut: StatutColis) -> bool:
-        """Verifie si la transition vers un nouveau statut est valide."""
-        return nouveau_statut in TRANSITIONS_VALIDES[self.statut]
+    @property
+    def statut(self) -> str:
+        """Nom du statut actuel (compatibilite avec l'ancienne API)."""
+        return self.etat.nom
 
-    def transiter_vers(self, nouveau_statut: StatutColis) -> None:
-        """Effectue une transition de statut.
+    def peut_transiter_vers(self, nom_etat_cible: str) -> bool:
+        """Verifie si la transition vers un etat (par nom) est possible."""
+        return nom_etat_cible in self.etat.transitions_autorisees()
 
-        Raises:
-            InvalidTransitionError: si la transition n'est pas valide.
+    def transiter_vers(self, nom_etat_cible: str, commentaire: str = "") -> None:
+        """Effectue une transition de statut et enregistre l'historique.
+
+        Args:
+            nom_etat_cible: nom de l'etat cible (ex: "EN_TRANSIT")
+            commentaire: note optionnelle liee a la transition
         """
-        if not self.peut_transiter_vers(nouveau_statut):
-            raise InvalidTransitionError(
-                statut_actuel=self.statut.value,
-                statut_cible=nouveau_statut.value,
+        etat_cible = etat_depuis_nom(nom_etat_cible)
+        ancien_nom = self.etat.nom
+        self.etat = self.etat.transiter_vers(etat_cible)
+        self.historique.append(
+            HistoriqueStatut(
+                colis_id=self.id,
+                statut_precedent=ancien_nom,
+                statut_nouveau=self.etat.nom,
+                commentaire=commentaire,
             )
-        self.statut = nouveau_statut
+        )
 
     def est_livre(self) -> bool:
         """Retourne True si le colis est livre ou confirme."""
-        return self.statut in {StatutColis.LIVRE, StatutColis.CONFIRME}
+        return self.etat.nom in {"LIVRE", "CONFIRME"}
 
     def est_modifiable(self) -> bool:
-        """Un colis n'est plus modifiable une fois en transit."""
-        return self.statut == StatutColis.CREE
+        """Delegue au state."""
+        return self.etat.est_modifiable()

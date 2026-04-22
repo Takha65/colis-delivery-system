@@ -7,12 +7,17 @@ from sqlalchemy.orm import Session
 from src.application.ports import IColisRepository
 from src.domain.entities import Colis
 from src.domain.value_objects import TrackingNumber
-from src.infrastructure.persistence.colis_mapper import to_entity, to_model
+from src.infrastructure.persistence.colis_mapper import (
+    historique_to_model,
+    to_entity,
+    to_model,
+)
 from src.infrastructure.persistence.colis_model import ColisModel
+from src.infrastructure.persistence.historique_model import HistoriqueStatutModel
 
 
 class SQLAlchemyColisRepository(IColisRepository):
-    """Implementation concrete du repository avec SQLAlchemy + PostgreSQL."""
+    """Implementation concrete du repository avec SQLAlchemy."""
 
     def __init__(self, session: Session) -> None:
         self._session = session
@@ -20,19 +25,35 @@ class SQLAlchemyColisRepository(IColisRepository):
     def save(self, colis: Colis) -> Colis:
         existing = self._session.get(ColisModel, colis.id)
         if existing is not None:
-            # Mise a jour : remplacer les attributs
             model = to_model(colis)
             for key, value in model.__dict__.items():
                 if not key.startswith("_"):
                     setattr(existing, key, value)
         else:
             self._session.add(to_model(colis))
+
+        # Ajouter les nouvelles entrees d'historique
+        existing_ids = {
+            h.id for h in self._session.query(HistoriqueStatutModel).filter_by(colis_id=colis.id).all()
+        }
+        for h in colis.historique:
+            if h.id not in existing_ids:
+                self._session.add(historique_to_model(h))
+
         self._session.commit()
         return colis
 
     def get_by_id(self, colis_id: UUID) -> Optional[Colis]:
         model = self._session.get(ColisModel, colis_id)
-        return to_entity(model) if model else None
+        if model is None:
+            return None
+        historique_models = (
+            self._session.query(HistoriqueStatutModel)
+            .filter_by(colis_id=colis_id)
+            .order_by(HistoriqueStatutModel.date_transition)
+            .all()
+        )
+        return to_entity(model, historique_models)
 
     def get_by_tracking_number(
         self, tracking_number: TrackingNumber
@@ -42,7 +63,15 @@ class SQLAlchemyColisRepository(IColisRepository):
             .filter_by(tracking_number=tracking_number.valeur)
             .first()
         )
-        return to_entity(model) if model else None
+        if model is None:
+            return None
+        historique_models = (
+            self._session.query(HistoriqueStatutModel)
+            .filter_by(colis_id=model.id)
+            .order_by(HistoriqueStatutModel.date_transition)
+            .all()
+        )
+        return to_entity(model, historique_models)
 
     def find_all(self) -> list[Colis]:
         models = self._session.query(ColisModel).all()

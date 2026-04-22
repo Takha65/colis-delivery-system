@@ -1,14 +1,14 @@
 """Tests unitaires de l'entite Colis."""
 import pytest
 
-from src.domain.entities import Colis, StatutColis, TypeColis
+from src.domain.entities import Colis, TypeColis
 from src.domain.exceptions import InvalidTransitionError
+from src.domain.states import ColisCree, ColisEnTransit, ColisLivre, ColisConfirme
 from src.domain.value_objects import Adresse, Dimensions, Poids, TrackingNumber
 
 
 @pytest.fixture
 def colis_standard() -> Colis:
-    """Fixture : un colis standard pret a l'emploi pour les tests."""
     return Colis(
         tracking_number=TrackingNumber.generer(),
         poids=Poids(valeur_kg=2.5),
@@ -23,10 +23,10 @@ def colis_standard() -> Colis:
 
 
 class TestColisCreation:
-    """Tests de creation d'un Colis."""
 
     def test_colis_est_cree_en_statut_cree(self, colis_standard: Colis) -> None:
-        assert colis_standard.statut == StatutColis.CREE
+        assert colis_standard.statut == "CREE"
+        assert isinstance(colis_standard.etat, ColisCree)
 
     def test_colis_a_un_id_unique(self) -> None:
         c1 = Colis(
@@ -48,57 +48,80 @@ class TestColisCreation:
     def test_type_par_defaut_est_standard(self, colis_standard: Colis) -> None:
         assert colis_standard.type_colis == TypeColis.STANDARD
 
+    def test_historique_vide_a_la_creation(self, colis_standard: Colis) -> None:
+        assert colis_standard.historique == []
+
 
 class TestColisTransitions:
-    """Tests du cycle de vie d'un Colis."""
 
     def test_transition_cree_vers_en_transit_valide(
         self, colis_standard: Colis
     ) -> None:
-        colis_standard.transiter_vers(StatutColis.EN_TRANSIT)
-        assert colis_standard.statut == StatutColis.EN_TRANSIT
+        colis_standard.transiter_vers("EN_TRANSIT")
+        assert colis_standard.statut == "EN_TRANSIT"
+        assert isinstance(colis_standard.etat, ColisEnTransit)
 
     def test_cycle_complet(self, colis_standard: Colis) -> None:
-        colis_standard.transiter_vers(StatutColis.EN_TRANSIT)
-        colis_standard.transiter_vers(StatutColis.LIVRE)
-        colis_standard.transiter_vers(StatutColis.CONFIRME)
-        assert colis_standard.statut == StatutColis.CONFIRME
+        colis_standard.transiter_vers("EN_TRANSIT")
+        colis_standard.transiter_vers("LIVRE")
+        colis_standard.transiter_vers("CONFIRME")
+        assert colis_standard.statut == "CONFIRME"
+        assert isinstance(colis_standard.etat, ColisConfirme)
 
     def test_transition_cree_vers_livre_invalide(
         self, colis_standard: Colis
     ) -> None:
-        """On ne peut pas sauter un etat."""
         with pytest.raises(InvalidTransitionError):
-            colis_standard.transiter_vers(StatutColis.LIVRE)
+            colis_standard.transiter_vers("LIVRE")
 
     def test_transition_depuis_confirme_impossible(
         self, colis_standard: Colis
     ) -> None:
-        """CONFIRME est un etat final."""
-        colis_standard.transiter_vers(StatutColis.EN_TRANSIT)
-        colis_standard.transiter_vers(StatutColis.LIVRE)
-        colis_standard.transiter_vers(StatutColis.CONFIRME)
+        colis_standard.transiter_vers("EN_TRANSIT")
+        colis_standard.transiter_vers("LIVRE")
+        colis_standard.transiter_vers("CONFIRME")
         with pytest.raises(InvalidTransitionError):
-            colis_standard.transiter_vers(StatutColis.EN_TRANSIT)
+            colis_standard.transiter_vers("EN_TRANSIT")
 
     def test_peut_transiter_vers(self, colis_standard: Colis) -> None:
-        assert colis_standard.peut_transiter_vers(StatutColis.EN_TRANSIT) is True
-        assert colis_standard.peut_transiter_vers(StatutColis.LIVRE) is False
+        assert colis_standard.peut_transiter_vers("EN_TRANSIT") is True
+        assert colis_standard.peut_transiter_vers("LIVRE") is False
+
+    def test_transition_ajoute_entree_historique(
+        self, colis_standard: Colis
+    ) -> None:
+        colis_standard.transiter_vers("EN_TRANSIT", commentaire="Pris en charge")
+        assert len(colis_standard.historique) == 1
+        entry = colis_standard.historique[0]
+        assert entry.statut_precedent == "CREE"
+        assert entry.statut_nouveau == "EN_TRANSIT"
+        assert entry.commentaire == "Pris en charge"
+        assert entry.colis_id == colis_standard.id
+
+    def test_historique_cycle_complet(self, colis_standard: Colis) -> None:
+        colis_standard.transiter_vers("EN_TRANSIT")
+        colis_standard.transiter_vers("LIVRE")
+        colis_standard.transiter_vers("CONFIRME")
+        assert len(colis_standard.historique) == 3
+        assert [h.statut_nouveau for h in colis_standard.historique] == [
+            "EN_TRANSIT",
+            "LIVRE",
+            "CONFIRME",
+        ]
 
 
 class TestColisMethodesMetier:
-    """Tests des methodes metier du Colis."""
 
     def test_est_livre_apres_livraison(self, colis_standard: Colis) -> None:
-        colis_standard.transiter_vers(StatutColis.EN_TRANSIT)
-        colis_standard.transiter_vers(StatutColis.LIVRE)
+        colis_standard.transiter_vers("EN_TRANSIT")
+        colis_standard.transiter_vers("LIVRE")
         assert colis_standard.est_livre() is True
 
     def test_pas_livre_en_transit(self, colis_standard: Colis) -> None:
-        colis_standard.transiter_vers(StatutColis.EN_TRANSIT)
+        colis_standard.transiter_vers("EN_TRANSIT")
         assert colis_standard.est_livre() is False
 
     def test_modifiable_seulement_si_cree(self, colis_standard: Colis) -> None:
         assert colis_standard.est_modifiable() is True
-        colis_standard.transiter_vers(StatutColis.EN_TRANSIT)
+        colis_standard.transiter_vers("EN_TRANSIT")
         assert colis_standard.est_modifiable() is False

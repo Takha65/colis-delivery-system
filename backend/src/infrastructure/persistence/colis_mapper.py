@@ -1,11 +1,12 @@
 """Mapper entre l'entite domaine Colis et le modele SQLAlchemy ColisModel."""
-from src.domain.entities import Colis, StatutColis, TypeColis
+from src.domain.entities import Colis, HistoriqueStatut, TypeColis
+from src.domain.states import etat_depuis_nom
 from src.domain.value_objects import Adresse, Dimensions, Poids, TrackingNumber
 from src.infrastructure.persistence.colis_model import ColisModel
+from src.infrastructure.persistence.historique_model import HistoriqueStatutModel
 
 
 def to_model(colis: Colis) -> ColisModel:
-    """Convertit une entite Colis vers un ColisModel."""
     return ColisModel(
         id=colis.id,
         tracking_number=colis.tracking_number.valeur,
@@ -22,13 +23,42 @@ def to_model(colis: Colis) -> ColisModel:
         code_postal_destination=colis.adresse_destination.code_postal,
         pays_destination=colis.adresse_destination.pays,
         type_colis=colis.type_colis.value,
-        statut=colis.statut.value,
+        statut=colis.etat.nom,
         date_creation=colis.date_creation,
     )
 
 
-def to_entity(model: ColisModel) -> Colis:
-    """Convertit un ColisModel vers une entite Colis."""
+def historique_to_model(h: HistoriqueStatut) -> HistoriqueStatutModel:
+    return HistoriqueStatutModel(
+        id=h.id,
+        colis_id=h.colis_id,
+        statut_precedent=h.statut_precedent,
+        statut_nouveau=h.statut_nouveau,
+        date_transition=h.date_transition,
+        commentaire=h.commentaire,
+    )
+
+
+def historique_to_entity(m: HistoriqueStatutModel) -> HistoriqueStatut:
+    return HistoriqueStatut(
+        id=m.id,
+        colis_id=m.colis_id,
+        statut_precedent=m.statut_precedent,
+        statut_nouveau=m.statut_nouveau,
+        date_transition=m.date_transition,
+        commentaire=m.commentaire,
+    )
+
+
+def to_entity(
+    model: ColisModel,
+    historique_models: list[HistoriqueStatutModel] | None = None,
+) -> Colis:
+    historique = (
+        [historique_to_entity(h) for h in historique_models]
+        if historique_models
+        else []
+    )
     return Colis(
         id=model.id,
         tracking_number=TrackingNumber(valeur=model.tracking_number),
@@ -51,6 +81,7 @@ def to_entity(model: ColisModel) -> Colis:
             pays=model.pays_destination,
         ),
         type_colis=TypeColis(model.type_colis),
-        statut=StatutColis(model.statut),
+        etat=etat_depuis_nom(model.statut),
         date_creation=model.date_creation,
+        historique=historique,
     )

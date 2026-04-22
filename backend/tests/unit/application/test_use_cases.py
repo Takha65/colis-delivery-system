@@ -10,7 +10,7 @@ from src.application.use_cases import (
     ObtenirColisUseCase,
     SupprimerColisUseCase,
 )
-from src.domain.entities import StatutColis, TypeColis
+from src.domain.entities import TypeColis
 from src.domain.exceptions import ColisNotFoundError
 from tests.fakes.fake_colis_repository import FakeColisRepository
 
@@ -34,12 +34,10 @@ def command_valide() -> CreerColisCommand:
 
 class TestCreerColis:
 
-    def test_cree_colis_avec_statut_cree(
-        self, repository, command_valide
-    ) -> None:
+    def test_cree_colis_avec_statut_cree(self, repository, command_valide) -> None:
         use_case = CreerColisUseCase(repository)
         colis = use_case.execute(command_valide)
-        assert colis.statut == StatutColis.CREE
+        assert colis.statut == "CREE"
         assert colis.id is not None
 
     def test_cree_colis_est_persiste(self, repository, command_valide) -> None:

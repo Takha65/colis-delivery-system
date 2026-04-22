@@ -2,34 +2,57 @@
 
 ## S - Single Responsibility Principle ✅
 
-**Illustration** : Chaque use case a **une seule responsabilite**.
-- `CreerColisUseCase` : creation uniquement
-- `ObtenirColisUseCase` : recuperation uniquement
-- `ListerColisUseCase` : liste uniquement
-- `SupprimerColisUseCase` : suppression uniquement
+Chaque use case a **une seule responsabilite** :
+- `CreerColisUseCase`, `ObtenirColisUseCase`, `ListerColisUseCase`,
+  `SupprimerColisUseCase`, `TransiterColisUseCase`, `ObtenirHistoriqueUseCase`
 
-**Fichiers** : `backend/src/application/use_cases/`
+Chaque **etat** (State Pattern) a **une seule responsabilite** : representer
+son comportement (transitions, modifiabilite, etc.).
+
+**Fichiers** : `src/application/use_cases/`, `src/domain/states/`
+
+---
+
+## O - Open/Closed Principle ✅
+
+Le **State Pattern** permet d'ajouter de nouveaux etats sans modifier le code
+existant. Il suffit de :
+1. Creer une nouvelle classe heritant de `ColisState`
+2. L'ajouter au registre `_ETATS`
+
+Aucune autre ligne de code n'a besoin d'etre modifiee.
+
+**Fichiers** : `src/domain/states/colis_state.py`
+
+---
+
+## L - Liskov Substitution Principle ✅
+
+Les 4 classes d'etat (`ColisCree`, `ColisEnTransit`, `ColisLivre`,
+`ColisConfirme`) sont **substituables** via `ColisState`. L'entite `Colis`
+manipule uniquement `ColisState`, sans connaitre le type concret.
+
+**Test de verification** : `tests/unit/domain/test_states.py` utilise
+`@pytest.mark.parametrize` pour faire tourner les memes tests sur tous les
+etats.
+
+**Fichiers** : `src/domain/states/colis_state.py`, `src/domain/entities/colis.py`
+
+---
+
+## I - Interface Segregation Principle (A venir)
 
 ---
 
 ## D - Dependency Inversion Principle ✅
 
-**Illustration** : Les use cases dependent de l'abstraction `IColisRepository`,
-pas de l'implementation concrete `SQLAlchemyColisRepository`.
+Les use cases dependent de l'abstraction `IColisRepository`, pas de
+l'implementation concrete `SQLAlchemyColisRepository`.
 
 ```python
 class CreerColisUseCase:
-    def __init__(self, repository: IColisRepository) -> None:  # <-- Abstraction
+    def __init__(self, repository: IColisRepository) -> None:
         self._repository = repository
 ```
 
-On peut injecter `SQLAlchemyColisRepository` en production ou `FakeColisRepository`
-en test, sans modifier le use case.
-
-**Fichiers** : tous les use cases + `application/ports/colis_repository.py`
-
----
-
-## O - Open/Closed Principle (A venir)
-## L - Liskov Substitution Principle (A venir)
-## I - Interface Segregation Principle (A venir)
+**Fichiers** : `src/application/use_cases/`, `src/application/ports/colis_repository.py`

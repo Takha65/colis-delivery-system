@@ -3,12 +3,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.infrastructure.persistence.colis_model import ColisModel  # noqa: F401
+from src.infrastructure.persistence.historique_model import HistoriqueStatutModel  # noqa: F401
 from src.interfaces.api.routes.colis_routes import router as colis_router
 from src.shared.config import settings
 
 
 def create_app() -> FastAPI:
-    """Factory de l'application FastAPI."""
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -35,8 +35,6 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     def on_startup() -> None:
-        """Creer les tables au demarrage (lecture dynamique de engine)."""
-        # Import dynamique pour que le monkey-patch des tests soit pris en compte
         from src.infrastructure.persistence import database as db_module
         from src.infrastructure.persistence import Base
         Base.metadata.create_all(bind=db_module.engine)

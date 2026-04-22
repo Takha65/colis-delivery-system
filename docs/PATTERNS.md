@@ -1,29 +1,42 @@
 # Design Patterns utilises
 
-## 1. Repository Pattern ✅ (Implemente)
+## 1. Repository Pattern ✅
 
-**Categorie** : Architectural
-**Emplacement** : `backend/src/application/ports/colis_repository.py` + `backend/src/infrastructure/persistence/sqlalchemy_colis_repository.py`
+**Emplacement** : `src/application/ports/colis_repository.py` + `src/infrastructure/persistence/sqlalchemy_colis_repository.py`
 
-### Probleme resolu
-Separer la logique metier de l'acces aux donnees. Les use cases ne doivent pas
-savoir si les colis sont stockes en PostgreSQL, MongoDB, ou en memoire.
+Separation entre la logique metier et l'acces aux donnees. Les use cases
+dependent de l'interface `IColisRepository`, avec deux implementations :
+- `SQLAlchemyColisRepository` (prod)
+- `FakeColisRepository` (tests)
 
-### Implementation
-- **Interface** (port) : `IColisRepository` declare les operations (save, get_by_id, find_all, delete)
-- **Implementations** :
-  - `SQLAlchemyColisRepository` : production (PostgreSQL)
-  - `FakeColisRepository` (dans tests/) : tests unitaires rapides
-
-### Justification
-Demontrer le **DIP** (Dependency Inversion Principle) : les use cases dependent
-de `IColisRepository`, pas de SQLAlchemy. Changer de techno = remplacer
-l'implementation sans toucher au metier.
+Demontrer **DIP**.
 
 ---
 
-## 2. Factory Method (A venir - M1.5)
-## 3. State (A venir - M1.4)
+## 2. State Pattern ✅
+
+**Emplacement** : `src/domain/states/colis_state.py`
+
+Le cycle de vie d'un colis (CREE -> EN_TRANSIT -> LIVRE -> CONFIRME) est
+represente par 4 classes polymorphes heritant de `ColisState`. Chaque etat
+sait :
+- son nom
+- quelles transitions il autorise
+- s'il est final
+- si le colis est encore modifiable
+
+### Avantages
+- **OCP** : ajouter un etat = creer une classe, aucune modification
+- **LSP** : tous les etats substituables via `ColisState`
+- **SRP** : chaque classe = 1 etat = 1 responsabilite
+
+### Avant / Apres
+Avant : dict `TRANSITIONS_VALIDES` + `if/else` implicite.
+Apres : polymorphisme, chaque etat encapsule sa logique.
+
+---
+
+## 3. Factory Method (A venir - M1.5)
 ## 4. Strategy (A venir - M2)
 ## 5. Adapter (A venir - M2)
 ## 6. Proxy (A venir - M2)
