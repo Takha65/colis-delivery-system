@@ -4,7 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.infrastructure.persistence.colis_model import ColisModel  # noqa: F401
 from src.infrastructure.persistence.historique_model import HistoriqueStatutModel  # noqa: F401
+from src.infrastructure.persistence.livreur_model import LivreurModel  # noqa: F401
 from src.interfaces.api.routes.colis_routes import router as colis_router
+from src.interfaces.api.routes.livreurs_routes import router as livreurs_router
+from src.interfaces.api.routes.routage_routes import router as routage_router
 from src.shared.config import settings
 
 
@@ -24,6 +27,8 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(colis_router)
+    app.include_router(livreurs_router)
+    app.include_router(routage_router)
 
     @app.get("/health", tags=["health"])
     async def health_check() -> dict[str, str]:

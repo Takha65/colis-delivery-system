@@ -5,34 +5,80 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from src.application.ports import IGeocodingService
+from src.application.ports import IGeocodingService, IStrategieRoutage
+from src.application.services.selecteur_strategie import SelecteurStrategieRoutage
 from src.application.use_cases import (
+    CalculerRouteUseCase,
     CreerColisUseCase,
+    CreerLivreurUseCase,
     ListerColisUseCase,
+    ListerLivreursUseCase,
     ObtenirColisUseCase,
     ObtenirHistoriqueUseCase,
     SupprimerColisUseCase,
     TransiterColisUseCase,
 )
+from src.domain.entities import Graphe
 from src.infrastructure.external import (
     GeocodingCacheProxy,
     NominatimGeocodingAdapter,
 )
-from src.infrastructure.persistence import SQLAlchemyColisRepository, get_db
+from src.infrastructure.graphe import charger_graphe_depuis_json
+from src.infrastructure.persistence import (
+    SQLAlchemyColisRepository,
+    SQLAlchemyLivreurRepository,
+    get_db,
+)
+from src.infrastructure.routage import (
+    StrategieDijkstra,
+    StrategieGreedy,
+    StrategiePlusProcheVoisin,
+)
+from src.shared.config import settings
 
+
+# ===== Singletons (charges une seule fois) =====
 
 @lru_cache(maxsize=1)
 def get_geocoding_service() -> IGeocodingService:
-    """Service de geocodage singleton (cache partage entre requetes)."""
     adapter = NominatimGeocodingAdapter()
     return GeocodingCacheProxy(adapter)
 
+
+@lru_cache(maxsize=1)
+def get_graphe() -> Graphe:
+    return charger_graphe_depuis_json(settings.graphe_json_path)
+
+
+@lru_cache(maxsize=1)
+def get_strategies() -> dict[str, IStrategieRoutage]:
+    return {
+        "DIJKSTRA": StrategieDijkstra(),
+        "PLUS_PROCHE_VOISIN": StrategiePlusProcheVoisin(),
+        "GREEDY": StrategieGreedy(),
+    }
+
+
+@lru_cache(maxsize=1)
+def get_selecteur_strategie() -> SelecteurStrategieRoutage:
+    return SelecteurStrategieRoutage(strategies=get_strategies())
+
+
+# ===== Repositories =====
 
 def get_colis_repository(
     db: Annotated[Session, Depends(get_db)],
 ) -> SQLAlchemyColisRepository:
     return SQLAlchemyColisRepository(db)
 
+
+def get_livreur_repository(
+    db: Annotated[Session, Depends(get_db)],
+) -> SQLAlchemyLivreurRepository:
+    return SQLAlchemyLivreurRepository(db)
+
+
+# ===== Use cases Colis =====
 
 def get_creer_colis_use_case(
     repo: Annotated[SQLAlchemyColisRepository, Depends(get_colis_repository)],
@@ -69,3 +115,24 @@ def get_obtenir_historique_use_case(
     repo: Annotated[SQLAlchemyColisRepository, Depends(get_colis_repository)],
 ) -> ObtenirHistoriqueUseCase:
     return ObtenirHistoriqueUseCase(repo)
+
+
+# ===== Use cases M2 =====
+
+def get_creer_livreur_use_case(
+    repo: Annotated[SQLAlchemyLivreurRepository, Depends(get_livreur_repository)],
+) -> CreerLivreurUseCase:
+    return CreerLivreurUseCase(repo)
+
+
+def get_lister_livreurs_use_case(
+    repo: Annotated[SQLAlchemyLivreurRepository, Depends(get_livreur_repository)],
+) -> ListerLivreursUseCase:
+    return ListerLivreursUseCase(repo)
+
+
+def get_calculer_route_use_case(
+    selecteur: Annotated[SelecteurStrategieRoutage, Depends(get_selecteur_strategie)],
+    graphe: Annotated[Graphe, Depends(get_graphe)],
+) -> CalculerRouteUseCase:
+    return CalculerRouteUseCase(selecteur, graphe)
