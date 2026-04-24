@@ -3,6 +3,7 @@
 Note : les operations ne committent PAS. Le commit est la responsabilite
 de l'appelant (Unit of Work ou dependency FastAPI via get_db).
 """
+
 from typing import Optional
 from uuid import UUID
 
@@ -37,9 +38,7 @@ class SQLAlchemyColisRepository(IColisRepository):
         # Ajouter les nouvelles entrees d'historique
         existing_ids = {
             h.id
-            for h in self._session.query(HistoriqueStatutModel)
-            .filter_by(colis_id=colis.id)
-            .all()
+            for h in self._session.query(HistoriqueStatutModel).filter_by(colis_id=colis.id).all()
         }
         for h in colis.historique:
             if h.id not in existing_ids:
@@ -60,9 +59,7 @@ class SQLAlchemyColisRepository(IColisRepository):
         )
         return to_entity(model, historique_models)
 
-    def get_by_tracking_number(
-        self, tracking_number: TrackingNumber
-    ) -> Optional[Colis]:
+    def get_by_tracking_number(self, tracking_number: TrackingNumber) -> Optional[Colis]:
         model = (
             self._session.query(ColisModel)
             .filter_by(tracking_number=tracking_number.valeur)

@@ -1,4 +1,5 @@
 """Value Objects du domaine."""
+
 from src.domain.value_objects.adresse import Adresse, Coordonnees
 from src.domain.value_objects.criteres_routage import CriteresRoutage
 from src.domain.value_objects.dimensions import Dimensions

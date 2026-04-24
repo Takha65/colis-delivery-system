@@ -1,4 +1,5 @@
 """Port : interface des strategies de calcul de route."""
+
 from abc import ABC, abstractmethod
 from uuid import UUID
 

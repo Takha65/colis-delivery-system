@@ -1,4 +1,5 @@
 """Tests unitaires du pattern State (ColisState et sous-classes)."""
+
 import pytest
 
 from src.domain.exceptions import InvalidTransitionError

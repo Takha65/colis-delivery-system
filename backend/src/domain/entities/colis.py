@@ -1,4 +1,5 @@
 """Entite Colis - coeur du domaine metier."""
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -33,9 +34,7 @@ class Colis:
     type_colis: TypeColis = TypeColis.STANDARD
     etat: ColisState = field(default_factory=ColisCree)
     id: UUID = field(default_factory=uuid4)
-    date_creation: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    date_creation: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     historique: list[HistoriqueStatut] = field(default_factory=list)
 
     @property

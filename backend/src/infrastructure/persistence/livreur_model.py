@@ -1,4 +1,5 @@
 """Modele SQLAlchemy pour la table livreurs."""
+
 from uuid import UUID, uuid4
 
 from sqlalchemy import Float, String

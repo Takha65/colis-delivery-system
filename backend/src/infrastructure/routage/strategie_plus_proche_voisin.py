@@ -1,4 +1,5 @@
 """Strategie Plus Proche Voisin : glouton rapide."""
+
 from uuid import UUID
 
 from src.application.ports import IStrategieRoutage
@@ -49,9 +50,7 @@ class StrategiePlusProcheVoisin(IStrategieRoutage):
             meilleures_infos: tuple = (0.0, 0.0, 0.0)
 
             for candidat in a_visiter:
-                _, cout, dist, tps, charge = plus_court_chemin(
-                    graphe, courant, candidat, criteres
-                )
+                _, cout, dist, tps, charge = plus_court_chemin(graphe, courant, candidat, criteres)
                 if cout < meilleur_cout:
                     meilleur_cout = cout
                     meilleur = candidat

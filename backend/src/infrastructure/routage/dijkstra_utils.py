@@ -1,4 +1,5 @@
 """Utilitaires Dijkstra : plus court chemin pondere entre 2 noeuds."""
+
 import heapq
 
 from src.domain.entities import Graphe
@@ -61,6 +62,4 @@ def plus_court_chemin(
                 ),
             )
 
-    raise RouteImpossibleError(
-        f"Aucun chemin trouve entre '{depart}' et '{arrivee}'"
-    )
+    raise RouteImpossibleError(f"Aucun chemin trouve entre '{depart}' et '{arrivee}'")

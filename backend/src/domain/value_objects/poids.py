@@ -1,4 +1,5 @@
 """Value Object representant le poids d'un colis."""
+
 from dataclasses import dataclass
 
 from src.domain.exceptions import InvalidColisError

@@ -1,4 +1,5 @@
 """Value Object representant une adresse postale."""
+
 from dataclasses import dataclass
 from typing import Optional
 

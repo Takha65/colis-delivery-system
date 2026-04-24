@@ -1,4 +1,5 @@
 """Exceptions metier du domaine."""
+
 from src.domain.exceptions.colis_exceptions import (
     ColisError,
     ColisNotFoundError,

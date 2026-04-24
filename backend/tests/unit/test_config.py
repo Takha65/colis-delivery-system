@@ -1,4 +1,5 @@
 """Tests unitaires de la configuration."""
+
 from src.shared.config import Settings
 
 

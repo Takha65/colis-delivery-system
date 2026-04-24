@@ -1,4 +1,5 @@
 """Value Object representant les dimensions d'un colis."""
+
 from dataclasses import dataclass
 
 from src.domain.exceptions import InvalidColisError
@@ -19,9 +20,7 @@ class Dimensions:
             ("hauteur", self.hauteur_cm),
         ]:
             if valeur <= 0:
-                raise InvalidColisError(
-                    f"La {nom} doit etre strictement positive, recu: {valeur}"
-                )
+                raise InvalidColisError(f"La {nom} doit etre strictement positive, recu: {valeur}")
 
     @property
     def volume_cm3(self) -> float:

@@ -1,4 +1,5 @@
 """Port : interface Unit of Work (transactions atomiques)."""
+
 from abc import ABC, abstractmethod
 
 

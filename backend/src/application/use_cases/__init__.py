@@ -1,4 +1,5 @@
 """Use cases de la couche application."""
+
 from src.application.use_cases.calculer_route import (
     CalculerRouteCommand,
     CalculerRouteUseCase,

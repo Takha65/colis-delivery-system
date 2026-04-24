@@ -1,4 +1,5 @@
 """Chargement du graphe routier depuis un fichier JSON."""
+
 import json
 from pathlib import Path
 

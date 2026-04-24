@@ -1,4 +1,5 @@
 """Configuration centralisee de l'application."""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

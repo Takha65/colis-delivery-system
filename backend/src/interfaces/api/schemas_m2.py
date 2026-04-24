@@ -1,10 +1,12 @@
 """Schemas Pydantic pour les endpoints M2 (livreurs, routes, graphe)."""
+
 from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 
 # ===== Livreurs =====
+
 
 class CreerLivreurRequest(BaseModel):
     nom: str = Field(..., min_length=1, max_length=100)
@@ -21,6 +23,7 @@ class LivreurResponse(BaseModel):
 
 # ===== Routes =====
 
+
 class CalculerRouteRequest(BaseModel):
     livreur_id: UUID
     noeud_depart: str = Field(..., min_length=1)
@@ -28,9 +31,7 @@ class CalculerRouteRequest(BaseModel):
     poids_distance: float = Field(default=0.5, ge=0, le=1)
     poids_temps: float = Field(default=0.3, ge=0, le=1)
     poids_charge: float = Field(default=0.2, ge=0, le=1)
-    strategie: str | None = Field(
-        default=None, pattern="^(DIJKSTRA|PLUS_PROCHE_VOISIN|GREEDY)$"
-    )
+    strategie: str | None = Field(default=None, pattern="^(DIJKSTRA|PLUS_PROCHE_VOISIN|GREEDY)$")
 
 
 class EtapeRouteResponse(BaseModel):
@@ -53,6 +54,7 @@ class RouteResponse(BaseModel):
 
 
 # ===== Graphe =====
+
 
 class NoeudResponse(BaseModel):
     id: str

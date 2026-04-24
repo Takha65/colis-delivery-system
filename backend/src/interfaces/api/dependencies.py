@@ -1,4 +1,5 @@
 """Dependances FastAPI : resolution des use cases et repositories."""
+
 from functools import lru_cache
 from typing import Annotated
 
@@ -52,6 +53,7 @@ from src.shared.config import settings
 
 # ===== Singletons =====
 
+
 @lru_cache(maxsize=1)
 def get_geocoding_service() -> IGeocodingService:
     adapter = NominatimGeocodingAdapter()
@@ -90,6 +92,7 @@ def get_event_bus() -> EventBus:
 
 # ===== Repositories =====
 
+
 def get_colis_repository(
     db: Annotated[Session, Depends(get_db)],
 ) -> SQLAlchemyColisRepository:
@@ -103,6 +106,7 @@ def get_livreur_repository(
 
 
 # ===== Use cases Colis =====
+
 
 def get_creer_colis_use_case(
     repo: Annotated[SQLAlchemyColisRepository, Depends(get_colis_repository)],
@@ -144,6 +148,7 @@ def get_obtenir_historique_use_case(
 
 
 # ===== Use cases M2 =====
+
 
 def get_creer_livreur_use_case(
     repo: Annotated[SQLAlchemyLivreurRepository, Depends(get_livreur_repository)],

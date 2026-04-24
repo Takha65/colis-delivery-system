@@ -1,4 +1,5 @@
 """Tests unitaires des use cases CRUD."""
+
 from uuid import uuid4
 
 import pytest
@@ -24,10 +25,14 @@ def repository() -> FakeColisRepository:
 def command_valide() -> CreerColisCommand:
     return CreerColisCommand(
         poids_kg=2.5,
-        longueur_cm=30, largeur_cm=20, hauteur_cm=10,
-        rue_origine="100 rue A", ville_origine="Sherbrooke",
+        longueur_cm=30,
+        largeur_cm=20,
+        hauteur_cm=10,
+        rue_origine="100 rue A",
+        ville_origine="Sherbrooke",
         code_postal_origine="J1K 1A1",
-        rue_destination="200 rue B", ville_destination="Montreal",
+        rue_destination="200 rue B",
+        ville_destination="Montreal",
         code_postal_destination="H3Z 2Y7",
     )
 
@@ -119,9 +124,7 @@ class TestCreerColisAvecGeocodage:
         # Mode degrade : colis cree meme si geocoding echoue
         assert colis.adresse_origine.coordonnees is None
 
-    def test_cree_colis_sans_geocoding_service(
-        self, repository, command_valide
-    ) -> None:
+    def test_cree_colis_sans_geocoding_service(self, repository, command_valide) -> None:
         """Backward compat : sans service, colis cree normalement."""
         use_case = CreerColisUseCase(repository, geocoding=None)
 

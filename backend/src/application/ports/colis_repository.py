@@ -1,4 +1,5 @@
 """Port : interface du repository de colis (Pattern Repository)."""
+
 from abc import ABC, abstractmethod
 from typing import Optional
 from uuid import UUID
@@ -23,9 +24,7 @@ class IColisRepository(ABC):
         """Recupere un colis par son id, None si inexistant."""
 
     @abstractmethod
-    def get_by_tracking_number(
-        self, tracking_number: TrackingNumber
-    ) -> Optional[Colis]:
+    def get_by_tracking_number(self, tracking_number: TrackingNumber) -> Optional[Colis]:
         """Recupere un colis par son numero de suivi."""
 
     @abstractmethod

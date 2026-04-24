@@ -1,4 +1,5 @@
 """Tests unitaires de l'EventBus (Observer pattern)."""
+
 from uuid import uuid4
 
 from src.application.services.event_bus import EventBus
@@ -15,7 +16,9 @@ class TestEventBus:
             recus.append(event)
 
         bus.subscribe(ColisCreeEvent, handler)
-        event = ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD")
+        event = ColisCreeEvent(
+            colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD"
+        )
         bus.publish(event)
 
         assert len(recus) == 1
@@ -28,7 +31,9 @@ class TestEventBus:
         bus.subscribe(ColisCreeEvent, lambda e: compteur.update({"a": compteur["a"] + 1}))
         bus.subscribe(ColisCreeEvent, lambda e: compteur.update({"b": compteur["b"] + 1}))
 
-        bus.publish(ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD"))
+        bus.publish(
+            ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD")
+        )
 
         assert compteur == {"a": 1, "b": 1}
 
@@ -40,7 +45,9 @@ class TestEventBus:
         bus.subscribe(ColisCreeEvent, lambda e: recus_cree.append(e))
         bus.subscribe(ColisLivreEvent, lambda e: recus_livre.append(e))
 
-        bus.publish(ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD"))
+        bus.publish(
+            ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD")
+        )
 
         assert len(recus_cree) == 1
         assert len(recus_livre) == 0
@@ -59,7 +66,9 @@ class TestEventBus:
         bus.subscribe(ColisCreeEvent, handler_normal)
 
         # publish ne doit pas lever d'exception
-        bus.publish(ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD"))
+        bus.publish(
+            ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD")
+        )
 
         # Le handler normal a quand meme ete appele
         assert len(recus) == 1
@@ -70,6 +79,8 @@ class TestEventBus:
         bus.subscribe(ColisCreeEvent, lambda e: recus.append(e))
         bus.clear()
 
-        bus.publish(ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD"))
+        bus.publish(
+            ColisCreeEvent(colis_id=uuid4(), tracking_number="CLS-12345678", type_colis="STANDARD")
+        )
 
         assert recus == []

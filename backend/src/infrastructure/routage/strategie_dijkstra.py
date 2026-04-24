@@ -1,4 +1,5 @@
 """Strategie Dijkstra : exploration optimale par permutations."""
+
 from itertools import permutations
 from uuid import UUID
 

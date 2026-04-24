@@ -1,4 +1,5 @@
 """Use case : creer un colis (avec geocodage et events)."""
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -48,12 +49,16 @@ class CreerColisUseCase:
             hauteur_cm=command.hauteur_cm,
         )
         adresse_origine = self._construire_adresse(
-            command.rue_origine, command.ville_origine,
-            command.code_postal_origine, command.pays_origine,
+            command.rue_origine,
+            command.ville_origine,
+            command.code_postal_origine,
+            command.pays_origine,
         )
         adresse_destination = self._construire_adresse(
-            command.rue_destination, command.ville_destination,
-            command.code_postal_destination, command.pays_destination,
+            command.rue_destination,
+            command.ville_destination,
+            command.code_postal_destination,
+            command.pays_destination,
         )
 
         factory = get_factory(TypeColis(command.type_colis))
@@ -79,9 +84,7 @@ class CreerColisUseCase:
         return colis_sauve
 
     def _construire_adresse(self, rue, ville, code_postal, pays) -> Adresse:
-        adresse = Adresse(
-            rue=rue, ville=ville, code_postal=code_postal, pays=pays
-        )
+        adresse = Adresse(rue=rue, ville=ville, code_postal=code_postal, pays=pays)
         if self._geocoding is None:
             return adresse
 
@@ -90,6 +93,9 @@ class CreerColisUseCase:
             return adresse
 
         return Adresse(
-            rue=rue, ville=ville, code_postal=code_postal,
-            pays=pays, coordonnees=coord,
+            rue=rue,
+            ville=ville,
+            code_postal=code_postal,
+            pays=pays,
+            coordonnees=coord,
         )

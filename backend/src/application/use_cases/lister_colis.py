@@ -1,4 +1,5 @@
 """Use case : lister tous les colis."""
+
 from src.application.ports import IColisRepository
 from src.domain.entities import Colis
 

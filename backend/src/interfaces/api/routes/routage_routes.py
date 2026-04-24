@@ -1,4 +1,5 @@
 """Routes REST pour le routage (calcul, strategies, graphe)."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -51,24 +52,18 @@ def calculer_route(
         route = use_case.execute(command)
         return route_to_response(route)
     except NoeudIntrouvableError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except RouteImpossibleError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
         ) from exc
     except (InvalidColisError, ValueError) as exc:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
-        ) from exc
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
 @router.get("/strategies", response_model=list[StrategieInfo])
 def lister_strategies(
-    selecteur: Annotated[
-        object, Depends(get_selecteur_strategie)
-    ],  # evite circular import
+    selecteur: Annotated[object, Depends(get_selecteur_strategie)],  # evite circular import
 ) -> list[StrategieInfo]:
     return [
         StrategieInfo(nom=nom, description=DESCRIPTIONS_STRATEGIES.get(nom, ""))

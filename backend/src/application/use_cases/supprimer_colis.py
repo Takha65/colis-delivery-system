@@ -1,4 +1,5 @@
 """Use case : supprimer un colis."""
+
 from uuid import UUID
 
 from src.application.ports import IColisRepository

@@ -1,4 +1,5 @@
 """Tests unitaires des factories de colis (Pattern Factory Method)."""
+
 import pytest
 
 from src.domain.entities import TypeColis
@@ -38,9 +39,7 @@ class TestToutesLesFactories:
     """Tests qui s'appliquent a TOUTES les factories (LSP)."""
 
     @pytest.mark.parametrize("factory", TOUTES_LES_FACTORIES)
-    def test_cree_colis_de_bon_type(
-        self, factory, adresse_origine, adresse_destination
-    ) -> None:
+    def test_cree_colis_de_bon_type(self, factory, adresse_origine, adresse_destination) -> None:
         colis = factory.creer(
             poids=Poids(valeur_kg=1.0),
             dimensions=Dimensions(longueur_cm=10, largeur_cm=10, hauteur_cm=10),
@@ -50,9 +49,7 @@ class TestToutesLesFactories:
         assert colis.type_colis == factory.type_colis()
 
     @pytest.mark.parametrize("factory", TOUTES_LES_FACTORIES)
-    def test_cree_colis_au_statut_cree(
-        self, factory, adresse_origine, adresse_destination
-    ) -> None:
+    def test_cree_colis_au_statut_cree(self, factory, adresse_origine, adresse_destination) -> None:
         colis = factory.creer(
             poids=Poids(valeur_kg=1.0),
             dimensions=Dimensions(longueur_cm=10, largeur_cm=10, hauteur_cm=10),
@@ -78,11 +75,10 @@ class TestToutesLesFactories:
 # Tests specifiques a chaque factory
 # ============================================================
 
+
 class TestStandardColisFactory:
 
-    def test_aucune_contrainte_specifique(
-        self, adresse_origine, adresse_destination
-    ) -> None:
+    def test_aucune_contrainte_specifique(self, adresse_origine, adresse_destination) -> None:
         factory = StandardColisFactory()
         # Poids et dimensions "normaux" (loin des limites)
         colis = factory.creer(
@@ -96,9 +92,7 @@ class TestStandardColisFactory:
 
 class TestFragileColisFactory:
 
-    def test_poids_sous_limite_accepte(
-        self, adresse_origine, adresse_destination
-    ) -> None:
+    def test_poids_sous_limite_accepte(self, adresse_origine, adresse_destination) -> None:
         factory = FragileColisFactory()
         colis = factory.creer(
             poids=Poids(valeur_kg=15.0),
@@ -108,9 +102,7 @@ class TestFragileColisFactory:
         )
         assert colis.type_colis == TypeColis.FRAGILE
 
-    def test_poids_trop_eleve_rejete(
-        self, adresse_origine, adresse_destination
-    ) -> None:
+    def test_poids_trop_eleve_rejete(self, adresse_origine, adresse_destination) -> None:
         factory = FragileColisFactory()
         with pytest.raises(InvalidColisError, match="fragile"):
             factory.creer(
@@ -120,9 +112,7 @@ class TestFragileColisFactory:
                 adresse_destination=adresse_destination,
             )
 
-    def test_volume_trop_grand_rejete(
-        self, adresse_origine, adresse_destination
-    ) -> None:
+    def test_volume_trop_grand_rejete(self, adresse_origine, adresse_destination) -> None:
         factory = FragileColisFactory()
         with pytest.raises(InvalidColisError, match="volume"):
             factory.creer(
@@ -135,9 +125,7 @@ class TestFragileColisFactory:
 
 class TestExpressColisFactory:
 
-    def test_colis_leger_et_petit_accepte(
-        self, adresse_origine, adresse_destination
-    ) -> None:
+    def test_colis_leger_et_petit_accepte(self, adresse_origine, adresse_destination) -> None:
         factory = ExpressColisFactory()
         colis = factory.creer(
             poids=Poids(valeur_kg=5.0),
@@ -147,9 +135,7 @@ class TestExpressColisFactory:
         )
         assert colis.type_colis == TypeColis.EXPRESS
 
-    def test_poids_trop_eleve_rejete(
-        self, adresse_origine, adresse_destination
-    ) -> None:
+    def test_poids_trop_eleve_rejete(self, adresse_origine, adresse_destination) -> None:
         factory = ExpressColisFactory()
         with pytest.raises(InvalidColisError, match="express"):
             factory.creer(
@@ -159,9 +145,7 @@ class TestExpressColisFactory:
                 adresse_destination=adresse_destination,
             )
 
-    def test_dimension_trop_grande_rejete(
-        self, adresse_origine, adresse_destination
-    ) -> None:
+    def test_dimension_trop_grande_rejete(self, adresse_origine, adresse_destination) -> None:
         factory = ExpressColisFactory()
         with pytest.raises(InvalidColisError, match="longueur"):
             factory.creer(
@@ -175,6 +159,7 @@ class TestExpressColisFactory:
 # ============================================================
 # Tests du registre
 # ============================================================
+
 
 class TestGetFactory:
 

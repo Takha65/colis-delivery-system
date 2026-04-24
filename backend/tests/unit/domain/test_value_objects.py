@@ -1,4 +1,5 @@
 """Tests unitaires des Value Objects."""
+
 import pytest
 
 from src.domain.exceptions import InvalidColisError

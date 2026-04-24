@@ -1,4 +1,5 @@
 """Tests unitaires de l'entite Colis."""
+
 import pytest
 
 from src.domain.entities import Colis, TypeColis
@@ -13,9 +14,7 @@ def colis_standard() -> Colis:
         tracking_number=TrackingNumber.generer(),
         poids=Poids(valeur_kg=2.5),
         dimensions=Dimensions(longueur_cm=30, largeur_cm=20, hauteur_cm=10),
-        adresse_origine=Adresse(
-            rue="100 rue Origine", ville="Sherbrooke", code_postal="J1K 1A1"
-        ),
+        adresse_origine=Adresse(rue="100 rue Origine", ville="Sherbrooke", code_postal="J1K 1A1"),
         adresse_destination=Adresse(
             rue="200 rue Destination", ville="Montreal", code_postal="H3Z 2Y7"
         ),
@@ -54,9 +53,7 @@ class TestColisCreation:
 
 class TestColisTransitions:
 
-    def test_transition_cree_vers_en_transit_valide(
-        self, colis_standard: Colis
-    ) -> None:
+    def test_transition_cree_vers_en_transit_valide(self, colis_standard: Colis) -> None:
         colis_standard.transiter_vers("EN_TRANSIT")
         assert colis_standard.statut == "EN_TRANSIT"
         assert isinstance(colis_standard.etat, ColisEnTransit)
@@ -68,15 +65,11 @@ class TestColisTransitions:
         assert colis_standard.statut == "CONFIRME"
         assert isinstance(colis_standard.etat, ColisConfirme)
 
-    def test_transition_cree_vers_livre_invalide(
-        self, colis_standard: Colis
-    ) -> None:
+    def test_transition_cree_vers_livre_invalide(self, colis_standard: Colis) -> None:
         with pytest.raises(InvalidTransitionError):
             colis_standard.transiter_vers("LIVRE")
 
-    def test_transition_depuis_confirme_impossible(
-        self, colis_standard: Colis
-    ) -> None:
+    def test_transition_depuis_confirme_impossible(self, colis_standard: Colis) -> None:
         colis_standard.transiter_vers("EN_TRANSIT")
         colis_standard.transiter_vers("LIVRE")
         colis_standard.transiter_vers("CONFIRME")
@@ -87,9 +80,7 @@ class TestColisTransitions:
         assert colis_standard.peut_transiter_vers("EN_TRANSIT") is True
         assert colis_standard.peut_transiter_vers("LIVRE") is False
 
-    def test_transition_ajoute_entree_historique(
-        self, colis_standard: Colis
-    ) -> None:
+    def test_transition_ajoute_entree_historique(self, colis_standard: Colis) -> None:
         colis_standard.transiter_vers("EN_TRANSIT", commentaire="Pris en charge")
         assert len(colis_standard.historique) == 1
         entry = colis_standard.historique[0]

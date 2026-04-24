@@ -1,4 +1,5 @@
 """Fake service de geocodage pour les tests."""
+
 from typing import Optional
 
 from src.application.ports import IGeocodingService

@@ -25,8 +25,6 @@ class CapaciteDepasseeError(RoutageError):
     """Leve lorsque la capacite du livreur est depassee."""
 
     def __init__(self, capacite_kg: float, poids_total_kg: float) -> None:
-        super().__init__(
-            f"Capacite depassee : {poids_total_kg} kg > {capacite_kg} kg"
-        )
+        super().__init__(f"Capacite depassee : {poids_total_kg} kg > {capacite_kg} kg")
         self.capacite_kg = capacite_kg
         self.poids_total_kg = poids_total_kg

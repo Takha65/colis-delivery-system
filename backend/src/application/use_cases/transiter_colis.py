@@ -1,4 +1,5 @@
 """Use case : faire transiter un colis vers un nouvel etat."""
+
 from dataclasses import dataclass
 from typing import Optional
 from uuid import UUID

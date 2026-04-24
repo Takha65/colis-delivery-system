@@ -1,4 +1,5 @@
 """Tests unitaires du Value Object CriteresRoutage."""
+
 import pytest
 
 from src.domain.exceptions import InvalidColisError

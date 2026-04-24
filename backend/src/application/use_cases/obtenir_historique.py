@@ -1,4 +1,5 @@
 """Use case : obtenir l'historique des statuts d'un colis."""
+
 from uuid import UUID
 
 from src.application.ports import IColisRepository

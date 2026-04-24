@@ -1,4 +1,5 @@
 """Entites du graphe routier."""
+
 from dataclasses import dataclass, field
 
 from src.domain.exceptions import NoeudIntrouvableError

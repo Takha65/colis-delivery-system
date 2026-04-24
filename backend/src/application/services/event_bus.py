@@ -3,6 +3,7 @@
 Les publishers publient des evenements, les handlers s'abonnent a des
 types specifiques. Aucun couplage direct entre eux.
 """
+
 import logging
 from collections import defaultdict
 from typing import Callable, Type
@@ -23,9 +24,7 @@ class EventBus:
     def __init__(self) -> None:
         self._handlers: dict[Type[DomainEvent], list[EventHandler]] = defaultdict(list)
 
-    def subscribe(
-        self, event_type: Type[DomainEvent], handler: EventHandler
-    ) -> None:
+    def subscribe(self, event_type: Type[DomainEvent], handler: EventHandler) -> None:
         """Abonne un handler a un type d'evenement."""
         self._handlers[event_type].append(handler)
 
@@ -42,7 +41,9 @@ class EventBus:
             except Exception as exc:  # pylint: disable=broad-except
                 logger.error(
                     "Erreur dans le handler %s pour %s : %s",
-                    handler.__name__, event_type.__name__, exc,
+                    handler.__name__,
+                    event_type.__name__,
+                    exc,
                 )
 
     def clear(self) -> None:

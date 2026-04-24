@@ -1,4 +1,5 @@
 """Use case : creer plusieurs colis de facon atomique (Unit of Work)."""
+
 from dataclasses import dataclass
 
 from src.application.ports import IUnitOfWork

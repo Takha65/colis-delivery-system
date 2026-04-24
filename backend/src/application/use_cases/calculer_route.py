@@ -1,4 +1,5 @@
 """Use case : calculer une route optimisee pour un livreur."""
+
 from dataclasses import dataclass
 from typing import Optional
 from uuid import UUID

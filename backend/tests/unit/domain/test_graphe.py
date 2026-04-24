@@ -1,4 +1,5 @@
 """Tests unitaires du graphe routier."""
+
 import pytest
 
 from src.domain.entities import Arete, Graphe, Noeud

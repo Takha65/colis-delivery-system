@@ -1,4 +1,5 @@
 """Etats d'un colis (Pattern State)."""
+
 from src.domain.states.colis_state import (
     ColisConfirme,
     ColisCree,

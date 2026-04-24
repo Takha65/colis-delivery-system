@@ -1,4 +1,5 @@
 """Evenements du domaine (faits immuables)."""
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from uuid import UUID
@@ -8,9 +9,7 @@ from uuid import UUID
 class DomainEvent:
     """Classe de base pour tous les evenements du domaine."""
 
-    date: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc), kw_only=True
-    )
+    date: datetime = field(default_factory=lambda: datetime.now(timezone.utc), kw_only=True)
 
 
 @dataclass(frozen=True)

@@ -1,4 +1,5 @@
 """Service : selection intelligente d'une strategie de routage."""
+
 from typing import Optional
 
 from src.application.ports import IStrategieRoutage

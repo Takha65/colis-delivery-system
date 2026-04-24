@@ -1,4 +1,5 @@
 """Routes REST pour les colis."""
+
 from typing import Annotated
 from uuid import UUID
 
@@ -103,9 +104,7 @@ def transiter_colis(
 @router.get("/{colis_id}/historique", response_model=list[HistoriqueStatutResponse])
 def obtenir_historique(
     colis_id: UUID,
-    use_case: Annotated[
-        ObtenirHistoriqueUseCase, Depends(get_obtenir_historique_use_case)
-    ],
+    use_case: Annotated[ObtenirHistoriqueUseCase, Depends(get_obtenir_historique_use_case)],
 ) -> list[HistoriqueStatutResponse]:
     try:
         return [historique_to_response(h) for h in use_case.execute(colis_id)]

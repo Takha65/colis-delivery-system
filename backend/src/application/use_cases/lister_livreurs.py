@@ -1,4 +1,5 @@
 """Use case : lister tous les livreurs."""
+
 from src.application.ports import ILivreurRepository
 from src.domain.entities import Livreur
 

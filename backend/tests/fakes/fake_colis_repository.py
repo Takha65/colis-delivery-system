@@ -1,4 +1,5 @@
 """Implementation in-memory du repository pour les tests."""
+
 from typing import Optional
 from uuid import UUID
 
@@ -20,9 +21,7 @@ class FakeColisRepository(IColisRepository):
     def get_by_id(self, colis_id: UUID) -> Optional[Colis]:
         return self._colis.get(colis_id)
 
-    def get_by_tracking_number(
-        self, tracking_number: TrackingNumber
-    ) -> Optional[Colis]:
+    def get_by_tracking_number(self, tracking_number: TrackingNumber) -> Optional[Colis]:
         for colis in self._colis.values():
             if colis.tracking_number == tracking_number:
                 return colis

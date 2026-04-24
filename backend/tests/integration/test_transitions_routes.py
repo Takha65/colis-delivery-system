@@ -4,10 +4,14 @@
 def _payload_valide() -> dict:
     return {
         "poids_kg": 2.5,
-        "longueur_cm": 30, "largeur_cm": 20, "hauteur_cm": 10,
-        "rue_origine": "100 rue A", "ville_origine": "Sherbrooke",
+        "longueur_cm": 30,
+        "largeur_cm": 20,
+        "hauteur_cm": 10,
+        "rue_origine": "100 rue A",
+        "ville_origine": "Sherbrooke",
         "code_postal_origine": "J1K 1A1",
-        "rue_destination": "200 rue B", "ville_destination": "Montreal",
+        "rue_destination": "200 rue B",
+        "ville_destination": "Montreal",
         "code_postal_destination": "H3Z 2Y7",
         "type_colis": "STANDARD",
     }
@@ -57,9 +61,7 @@ class TestTransiterColis:
         colis_id = colis["id"]
 
         for etat in ["EN_TRANSIT", "LIVRE", "CONFIRME"]:
-            r = client.post(
-                f"/api/colis/{colis_id}/transiter", json={"nouvel_etat": etat}
-            )
+            r = client.post(f"/api/colis/{colis_id}/transiter", json={"nouvel_etat": etat})
             assert r.status_code == 200
 
         final = client.get(f"/api/colis/{colis_id}").json()
@@ -82,9 +84,7 @@ class TestHistorique:
             f"/api/colis/{colis_id}/transiter",
             json={"nouvel_etat": "EN_TRANSIT", "commentaire": "Pris en charge"},
         )
-        client.post(
-            f"/api/colis/{colis_id}/transiter", json={"nouvel_etat": "LIVRE"}
-        )
+        client.post(f"/api/colis/{colis_id}/transiter", json={"nouvel_etat": "LIVRE"})
 
         response = client.get(f"/api/colis/{colis_id}/historique")
         assert response.status_code == 200

@@ -3,6 +3,7 @@
 Pattern Adapter : convertit l'interface de l'API Nominatim vers notre
 interface IGeocodingService. Le domaine ne connait rien de Nominatim.
 """
+
 import logging
 import time
 from typing import Optional
@@ -49,9 +50,7 @@ class NominatimGeocodingAdapter(IGeocodingService):
         headers = {"User-Agent": self._user_agent}
 
         try:
-            response = httpx.get(
-                url, params=params, headers=headers, timeout=self._timeout
-            )
+            response = httpx.get(url, params=params, headers=headers, timeout=self._timeout)
             response.raise_for_status()
             data = response.json()
         except httpx.HTTPError as exc:
@@ -69,9 +68,7 @@ class NominatimGeocodingAdapter(IGeocodingService):
                 longitude=float(premier_resultat["lon"]),
             )
         except (KeyError, ValueError, TypeError) as exc:
-            logger.warning(
-                "Reponse Nominatim mal formee pour '%s': %s", adresse, exc
-            )
+            logger.warning("Reponse Nominatim mal formee pour '%s': %s", adresse, exc)
             return None
 
     def _respecter_rate_limit(self) -> None:

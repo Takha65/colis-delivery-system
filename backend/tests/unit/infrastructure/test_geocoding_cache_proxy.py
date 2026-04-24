@@ -1,4 +1,5 @@
 """Tests unitaires du GeocodingCacheProxy."""
+
 import pytest
 
 from src.domain.value_objects import Adresse, Coordonnees
@@ -59,9 +60,7 @@ class TestGeocodingCacheProxy:
         assert fake.compteur_appels == 2
         assert proxy.taille_cache() == 2
 
-    def test_retourne_meme_resultat_que_service_interne(
-        self, adresse_sherbrooke
-    ) -> None:
+    def test_retourne_meme_resultat_que_service_interne(self, adresse_sherbrooke) -> None:
         coord_attendue = Coordonnees(latitude=45.5, longitude=-72.5)
         fake = FakeGeocodingService(coordonnees_par_defaut=coord_attendue)
         proxy = GeocodingCacheProxy(fake)
@@ -70,9 +69,7 @@ class TestGeocodingCacheProxy:
 
         assert resultat == coord_attendue
 
-    def test_echec_du_service_pas_mis_en_cache_comme_valeur(
-        self, adresse_sherbrooke
-    ) -> None:
+    def test_echec_du_service_pas_mis_en_cache_comme_valeur(self, adresse_sherbrooke) -> None:
         """Si le service retourne None, on cache aussi None (evite re-essayer)."""
         fake = FakeGeocodingService(doit_echouer=True)
         proxy = GeocodingCacheProxy(fake)
@@ -119,6 +116,7 @@ class TestProxySubstitutable:
 
         # Les deux doivent etre utilisables via IGeocodingService
         from src.application.ports import IGeocodingService
+
         assert isinstance(fake, IGeocodingService)
         assert isinstance(proxy, IGeocodingService)
 

@@ -3,6 +3,7 @@
 Pattern Proxy : intercepte les appels pour ajouter du cache en memoire,
 sans changer l'interface. Respecte strictement le contrat IGeocodingService.
 """
+
 import logging
 from typing import Optional
 

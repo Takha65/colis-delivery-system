@@ -3,6 +3,7 @@
 Note : les operations ne committent PAS. Le commit est la responsabilite
 de l'appelant (Unit of Work ou dependency FastAPI via get_db).
 """
+
 from typing import Optional
 from uuid import UUID
 

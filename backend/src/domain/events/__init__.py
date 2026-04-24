@@ -1,4 +1,5 @@
 """Evenements du domaine (pour Observer / Event Bus)."""
+
 from src.domain.events.domain_events import (
     ColisCreeEvent,
     ColisLivreEvent,

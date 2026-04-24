@@ -1,4 +1,5 @@
 """Fixtures partagees pour les tests d'integration."""
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -24,9 +25,7 @@ def test_engine():
 
 @pytest.fixture
 def test_db_session(test_engine):
-    TestingSessionLocal = sessionmaker(
-        bind=test_engine, autocommit=False, autoflush=False
-    )
+    TestingSessionLocal = sessionmaker(bind=test_engine, autocommit=False, autoflush=False)
     session = TestingSessionLocal()
     try:
         yield session
@@ -37,6 +36,7 @@ def test_db_session(test_engine):
 @pytest.fixture
 def client(test_db_session, test_engine, monkeypatch):
     from src.infrastructure.persistence import database as db_module
+
     monkeypatch.setattr(db_module, "engine", test_engine)
 
     from main import app

@@ -1,4 +1,5 @@
 """Mappers M2 : entites <-> schemas API."""
+
 from src.domain.entities import Graphe, Livreur, Route
 from src.interfaces.api.schemas_m2 import (
     AreteResponse,

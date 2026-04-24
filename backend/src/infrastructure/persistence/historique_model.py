@@ -1,4 +1,5 @@
 """Modele SQLAlchemy pour l'historique des statuts."""
+
 from datetime import datetime
 from uuid import UUID, uuid4
 

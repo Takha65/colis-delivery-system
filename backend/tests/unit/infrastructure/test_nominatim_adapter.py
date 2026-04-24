@@ -1,4 +1,5 @@
 """Tests unitaires de NominatimGeocodingAdapter (avec mock HTTP)."""
+
 from unittest.mock import MagicMock, patch
 
 import httpx

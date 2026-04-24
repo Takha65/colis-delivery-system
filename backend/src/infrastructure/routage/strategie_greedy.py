@@ -1,4 +1,5 @@
 """Strategie Greedy : glouton avec heuristique adaptative."""
+
 from uuid import UUID
 
 from src.application.ports import IStrategieRoutage
@@ -62,9 +63,7 @@ class StrategieGreedy(IStrategieRoutage):
                     # Moyenne des couts depuis candidat vers les restants
                     couts_suivants = []
                     for autre in autres:
-                        _, c_suivant, _, _, _ = plus_court_chemin(
-                            graphe, candidat, autre, criteres
-                        )
+                        _, c_suivant, _, _, _ = plus_court_chemin(graphe, candidat, autre, criteres)
                         couts_suivants.append(c_suivant)
                     penalite_isolation = min(couts_suivants) * 0.3
 

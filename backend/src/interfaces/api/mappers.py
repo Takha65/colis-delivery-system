@@ -1,4 +1,5 @@
 """Mappers entre entites domaine et schemas API."""
+
 from src.domain.entities import Colis, HistoriqueStatut
 from src.interfaces.api.schemas import (
     AdresseResponse,

@@ -1,4 +1,5 @@
 """Value Object representant un numero de suivi de colis."""
+
 import re
 import secrets
 from dataclasses import dataclass
@@ -20,8 +21,7 @@ class TrackingNumber:
     def __post_init__(self) -> None:
         if not self.PATTERN.match(self.valeur):
             raise InvalidColisError(
-                f"Numero de suivi invalide: '{self.valeur}' "
-                f"(format attendu: CLS-XXXXXXXX)"
+                f"Numero de suivi invalide: '{self.valeur}' " f"(format attendu: CLS-XXXXXXXX)"
             )
 
     @classmethod

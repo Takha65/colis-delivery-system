@@ -1,4 +1,5 @@
 """Port : interface d'un service de geocodage d'adresses."""
+
 from abc import ABC, abstractmethod
 from typing import Optional
 

@@ -1,4 +1,5 @@
 """Pattern State : chaque etat d'un colis est une classe dediee."""
+
 from abc import ABC, abstractmethod
 
 from src.domain.exceptions import InvalidTransitionError
@@ -34,9 +35,7 @@ class ColisState(ABC):
             InvalidTransitionError: si la transition n'est pas autorisee.
         """
         if not self.peut_transiter_vers(autre):
-            raise InvalidTransitionError(
-                statut_actuel=self.nom, statut_cible=autre.nom
-            )
+            raise InvalidTransitionError(statut_actuel=self.nom, statut_cible=autre.nom)
         return autre
 
     def est_final(self) -> bool:

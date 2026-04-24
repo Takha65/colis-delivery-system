@@ -1,4 +1,5 @@
 """Fake repository livreurs pour tests."""
+
 from typing import Optional
 from uuid import UUID
 

@@ -1,4 +1,5 @@
 """Tests d'integration des routes API des colis."""
+
 from uuid import uuid4
 
 
@@ -104,10 +105,14 @@ class TestFactoryMethodViaAPI:
     def _payload_base(self) -> dict:
         return {
             "poids_kg": 5.0,
-            "longueur_cm": 20, "largeur_cm": 20, "hauteur_cm": 20,
-            "rue_origine": "100 rue A", "ville_origine": "Sherbrooke",
+            "longueur_cm": 20,
+            "largeur_cm": 20,
+            "hauteur_cm": 20,
+            "rue_origine": "100 rue A",
+            "ville_origine": "Sherbrooke",
             "code_postal_origine": "J1K 1A1",
-            "rue_destination": "200 rue B", "ville_destination": "Montreal",
+            "rue_destination": "200 rue B",
+            "ville_destination": "Montreal",
             "code_postal_destination": "H3Z 2Y7",
         }
 

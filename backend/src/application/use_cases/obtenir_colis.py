@@ -1,4 +1,5 @@
 """Use case : obtenir un colis par son id."""
+
 from uuid import UUID
 
 from src.application.ports import IColisRepository

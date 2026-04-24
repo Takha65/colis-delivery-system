@@ -1,4 +1,5 @@
 """Schemas Pydantic pour l'API REST (validation entree/sortie)."""
+
 from datetime import datetime
 from uuid import UUID
 

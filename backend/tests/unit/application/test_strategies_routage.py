@@ -1,4 +1,5 @@
 """Tests unitaires des strategies de routage (Strategy Pattern)."""
+
 from uuid import uuid4
 
 import pytest
@@ -94,9 +95,7 @@ class TestContratStrategies:
         assert {"A", "B", "C", "D"} == noeuds_visites
 
     @pytest.mark.parametrize("strategie", TOUTES_LES_STRATEGIES)
-    def test_ordre_coherent(
-        self, strategie: IStrategieRoutage, graphe_test: Graphe
-    ) -> None:
+    def test_ordre_coherent(self, strategie: IStrategieRoutage, graphe_test: Graphe) -> None:
         route = strategie.calculer(
             graphe=graphe_test,
             noeud_depart="A",
@@ -108,9 +107,7 @@ class TestContratStrategies:
         assert ordres == sorted(ordres)
 
     @pytest.mark.parametrize("strategie", TOUTES_LES_STRATEGIES)
-    def test_metriques_positives(
-        self, strategie: IStrategieRoutage, graphe_test: Graphe
-    ) -> None:
+    def test_metriques_positives(self, strategie: IStrategieRoutage, graphe_test: Graphe) -> None:
         route = strategie.calculer(
             graphe=graphe_test,
             noeud_depart="A",
@@ -153,20 +150,14 @@ class TestInfluenceDesCriteres:
         livreur = uuid4()
 
         # Priorite distance : prefere le chemin court (X->M->Y = 10 km, charge 0.9)
-        criteres_distance = CriteresRoutage(
-            poids_distance=1.0, poids_temps=0.0, poids_charge=0.0
-        )
+        criteres_distance = CriteresRoutage(poids_distance=1.0, poids_temps=0.0, poids_charge=0.0)
         # Priorite charge : prefere le chemin fluide (X->N->Y = 25 km, charge 0.1)
-        criteres_charge = CriteresRoutage(
-            poids_distance=0.0, poids_temps=0.0, poids_charge=1.0
-        )
+        criteres_charge = CriteresRoutage(poids_distance=0.0, poids_temps=0.0, poids_charge=1.0)
 
         route_courte = strategie.calculer(
             graphe_discriminant, "X", ["Y"], criteres_distance, livreur
         )
-        route_fluide = strategie.calculer(
-            graphe_discriminant, "X", ["Y"], criteres_charge, livreur
-        )
+        route_fluide = strategie.calculer(graphe_discriminant, "X", ["Y"], criteres_charge, livreur)
 
         # La route courte doit etre plus courte en distance
         assert route_courte.distance_totale_km < route_fluide.distance_totale_km
@@ -186,32 +177,22 @@ class TestSelecteurStrategie:
             }
         )
 
-    def test_selection_auto_petit_nombre(
-        self, selecteur: SelecteurStrategieRoutage
-    ) -> None:
+    def test_selection_auto_petit_nombre(self, selecteur: SelecteurStrategieRoutage) -> None:
         strat = selecteur.selectionner(nombre_colis=3)
         assert strat.nom == "DIJKSTRA"
 
-    def test_selection_auto_nombre_moyen(
-        self, selecteur: SelecteurStrategieRoutage
-    ) -> None:
+    def test_selection_auto_nombre_moyen(self, selecteur: SelecteurStrategieRoutage) -> None:
         strat = selecteur.selectionner(nombre_colis=10)
         assert strat.nom == "GREEDY"
 
-    def test_selection_auto_grand_nombre(
-        self, selecteur: SelecteurStrategieRoutage
-    ) -> None:
+    def test_selection_auto_grand_nombre(self, selecteur: SelecteurStrategieRoutage) -> None:
         strat = selecteur.selectionner(nombre_colis=25)
         assert strat.nom == "PLUS_PROCHE_VOISIN"
 
-    def test_selection_explicite_override_auto(
-        self, selecteur: SelecteurStrategieRoutage
-    ) -> None:
+    def test_selection_explicite_override_auto(self, selecteur: SelecteurStrategieRoutage) -> None:
         strat = selecteur.selectionner(nombre_colis=3, strategie_demandee="GREEDY")
         assert strat.nom == "GREEDY"
 
-    def test_strategie_inconnue_leve_exception(
-        self, selecteur: SelecteurStrategieRoutage
-    ) -> None:
+    def test_strategie_inconnue_leve_exception(self, selecteur: SelecteurStrategieRoutage) -> None:
         with pytest.raises(ValueError, match="inconnue"):
             selecteur.selectionner(nombre_colis=3, strategie_demandee="INVENTEE")

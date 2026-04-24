@@ -1,4 +1,5 @@
 """Tests unitaires des use cases livreurs."""
+
 import pytest
 
 from src.application.use_cases import (
@@ -18,18 +19,14 @@ class TestCreerLivreur:
 
     def test_cree_livreur(self, repository) -> None:
         use_case = CreerLivreurUseCase(repository)
-        command = CreerLivreurCommand(
-            nom="Jean", capacite_max_kg=50.0, position_depart_id="SHE"
-        )
+        command = CreerLivreurCommand(nom="Jean", capacite_max_kg=50.0, position_depart_id="SHE")
         livreur = use_case.execute(command)
         assert livreur.nom == "Jean"
         assert livreur.id is not None
 
     def test_livreur_persiste(self, repository) -> None:
         use_case = CreerLivreurUseCase(repository)
-        command = CreerLivreurCommand(
-            nom="Marie", capacite_max_kg=30.0, position_depart_id="MTL"
-        )
+        command = CreerLivreurCommand(nom="Marie", capacite_max_kg=30.0, position_depart_id="MTL")
         livreur = use_case.execute(command)
         assert repository.get_by_id(livreur.id) is not None
 
