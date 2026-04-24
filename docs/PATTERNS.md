@@ -30,7 +30,6 @@ Le domaine ne connait rien de Nominatim.
 Enveloppe le NominatimAdapter pour ajouter un cache in-memory,
 sans changer l'interface. Respecte le rate limit Nominatim.
 
-## 7. Unit of Work (A venir - J4)
-## 8. Facade (A venir - J4)
-## 9. Decorator (A venir - J4)
-## 10. Observer (A venir - J4)
+## 7. Unit of Work 
+
+## 10. Observer
