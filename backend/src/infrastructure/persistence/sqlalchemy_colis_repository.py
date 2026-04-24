@@ -1,4 +1,8 @@
-"""Implementation SQLAlchemy du ColisRepository (Pattern Repository)."""
+"""Implementation SQLAlchemy du ColisRepository.
+
+Note : les operations ne committent PAS. Le commit est la responsabilite
+de l'appelant (Unit of Work ou dependency FastAPI via get_db).
+"""
 from typing import Optional
 from uuid import UUID
 
@@ -17,8 +21,6 @@ from src.infrastructure.persistence.historique_model import HistoriqueStatutMode
 
 
 class SQLAlchemyColisRepository(IColisRepository):
-    """Implementation concrete du repository avec SQLAlchemy."""
-
     def __init__(self, session: Session) -> None:
         self._session = session
 
@@ -34,13 +36,16 @@ class SQLAlchemyColisRepository(IColisRepository):
 
         # Ajouter les nouvelles entrees d'historique
         existing_ids = {
-            h.id for h in self._session.query(HistoriqueStatutModel).filter_by(colis_id=colis.id).all()
+            h.id
+            for h in self._session.query(HistoriqueStatutModel)
+            .filter_by(colis_id=colis.id)
+            .all()
         }
         for h in colis.historique:
             if h.id not in existing_ids:
                 self._session.add(historique_to_model(h))
 
-        self._session.commit()
+        self._session.flush()
         return colis
 
     def get_by_id(self, colis_id: UUID) -> Optional[Colis]:
@@ -82,5 +87,5 @@ class SQLAlchemyColisRepository(IColisRepository):
         if model is None:
             return False
         self._session.delete(model)
-        self._session.commit()
+        self._session.flush()
         return True

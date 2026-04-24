@@ -14,9 +14,17 @@ SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
 def get_db():
-    """Dependance FastAPI : fournit une session DB par requete."""
+    """Dependance FastAPI : fournit une session DB par requete.
+
+    La session commit automatiquement a la fin d'une requete reussie
+    et rollback si une exception survient.
+    """
     db = SessionLocal()
     try:
         yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()

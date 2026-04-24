@@ -7,6 +7,10 @@ from src.application.use_cases.creer_colis import (
     CreerColisCommand,
     CreerColisUseCase,
 )
+from src.application.use_cases.creer_colis_en_lot import (
+    CreerColisEnLotCommand,
+    CreerColisEnLotUseCase,
+)
 from src.application.use_cases.creer_livreur import (
     CreerLivreurCommand,
     CreerLivreurUseCase,
@@ -26,6 +30,8 @@ __all__ = [
     "CalculerRouteUseCase",
     "CreerColisCommand",
     "CreerColisUseCase",
+    "CreerColisEnLotCommand",
+    "CreerColisEnLotUseCase",
     "CreerLivreurCommand",
     "CreerLivreurUseCase",
     "ListerColisUseCase",

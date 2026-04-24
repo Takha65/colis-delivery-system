@@ -1,4 +1,8 @@
-"""Implementation SQLAlchemy du LivreurRepository."""
+"""Implementation SQLAlchemy du LivreurRepository.
+
+Note : les operations ne committent PAS. Le commit est la responsabilite
+de l'appelant (Unit of Work ou dependency FastAPI via get_db).
+"""
 from typing import Optional
 from uuid import UUID
 
@@ -10,8 +14,6 @@ from src.infrastructure.persistence.livreur_model import LivreurModel
 
 
 class SQLAlchemyLivreurRepository(ILivreurRepository):
-    """Repository SQLAlchemy pour les livreurs."""
-
     def __init__(self, session: Session) -> None:
         self._session = session
 
@@ -29,7 +31,7 @@ class SQLAlchemyLivreurRepository(ILivreurRepository):
                 position_depart_id=livreur.position_depart_id,
             )
             self._session.add(model)
-        self._session.commit()
+        self._session.flush()  # force l'INSERT sans committer
         return livreur
 
     def get_by_id(self, livreur_id: UUID) -> Optional[Livreur]:

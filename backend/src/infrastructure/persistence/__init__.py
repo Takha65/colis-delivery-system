@@ -6,6 +6,9 @@ from src.infrastructure.persistence.sqlalchemy_colis_repository import (
 from src.infrastructure.persistence.sqlalchemy_livreur_repository import (
     SQLAlchemyLivreurRepository,
 )
+from src.infrastructure.persistence.sqlalchemy_unit_of_work import (
+    SQLAlchemyUnitOfWork,
+)
 
 __all__ = [
     "Base",
@@ -14,4 +17,5 @@ __all__ = [
     "get_db",
     "SQLAlchemyColisRepository",
     "SQLAlchemyLivreurRepository",
+    "SQLAlchemyUnitOfWork",
 ]

@@ -6,6 +6,13 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from src.application.ports import IGeocodingService, IStrategieRoutage
+from src.application.services.event_bus import EventBus
+from src.application.services.event_handlers import (
+    log_colis_cree,
+    log_colis_livre,
+    log_colis_transite,
+    log_route_calculee,
+)
 from src.application.services.selecteur_strategie import SelecteurStrategieRoutage
 from src.application.use_cases import (
     CalculerRouteUseCase,
@@ -19,6 +26,12 @@ from src.application.use_cases import (
     TransiterColisUseCase,
 )
 from src.domain.entities import Graphe
+from src.domain.events import (
+    ColisCreeEvent,
+    ColisLivreEvent,
+    ColisTransiteEvent,
+    RouteCalculeeEvent,
+)
 from src.infrastructure.external import (
     GeocodingCacheProxy,
     NominatimGeocodingAdapter,
@@ -37,7 +50,7 @@ from src.infrastructure.routage import (
 from src.shared.config import settings
 
 
-# ===== Singletons (charges une seule fois) =====
+# ===== Singletons =====
 
 @lru_cache(maxsize=1)
 def get_geocoding_service() -> IGeocodingService:
@@ -64,6 +77,17 @@ def get_selecteur_strategie() -> SelecteurStrategieRoutage:
     return SelecteurStrategieRoutage(strategies=get_strategies())
 
 
+@lru_cache(maxsize=1)
+def get_event_bus() -> EventBus:
+    """Event Bus singleton avec handlers deja enregistres."""
+    bus = EventBus()
+    bus.subscribe(ColisCreeEvent, log_colis_cree)
+    bus.subscribe(ColisTransiteEvent, log_colis_transite)
+    bus.subscribe(ColisLivreEvent, log_colis_livre)
+    bus.subscribe(RouteCalculeeEvent, log_route_calculee)
+    return bus
+
+
 # ===== Repositories =====
 
 def get_colis_repository(
@@ -83,8 +107,9 @@ def get_livreur_repository(
 def get_creer_colis_use_case(
     repo: Annotated[SQLAlchemyColisRepository, Depends(get_colis_repository)],
     geocoding: Annotated[IGeocodingService, Depends(get_geocoding_service)],
+    event_bus: Annotated[EventBus, Depends(get_event_bus)],
 ) -> CreerColisUseCase:
-    return CreerColisUseCase(repo, geocoding)
+    return CreerColisUseCase(repo, geocoding, event_bus)
 
 
 def get_obtenir_colis_use_case(
@@ -107,8 +132,9 @@ def get_supprimer_colis_use_case(
 
 def get_transiter_colis_use_case(
     repo: Annotated[SQLAlchemyColisRepository, Depends(get_colis_repository)],
+    event_bus: Annotated[EventBus, Depends(get_event_bus)],
 ) -> TransiterColisUseCase:
-    return TransiterColisUseCase(repo)
+    return TransiterColisUseCase(repo, event_bus)
 
 
 def get_obtenir_historique_use_case(
@@ -134,5 +160,6 @@ def get_lister_livreurs_use_case(
 def get_calculer_route_use_case(
     selecteur: Annotated[SelecteurStrategieRoutage, Depends(get_selecteur_strategie)],
     graphe: Annotated[Graphe, Depends(get_graphe)],
+    event_bus: Annotated[EventBus, Depends(get_event_bus)],
 ) -> CalculerRouteUseCase:
-    return CalculerRouteUseCase(selecteur, graphe)
+    return CalculerRouteUseCase(selecteur, graphe, event_bus)
