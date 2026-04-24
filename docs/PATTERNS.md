@@ -30,6 +30,15 @@ Le domaine ne connait rien de Nominatim.
 Enveloppe le NominatimAdapter pour ajouter un cache in-memory,
 sans changer l'interface. Respecte le rate limit Nominatim.
 
-## 7. Unit of Work 
+## 7. Unit of Work ✅
+`backend/src/application/ports/unit_of_work.py`
+Centralise la gestion transactionnelle des opérations repositories.
+Permet de confirmer ou annuler un ensemble d’actions avec commit/rollback.
+Garantit la cohérence des données lors de la création ou mise à jour des colis.
 
-## 10. Observer
+## 10. Observer ✅
+`backend/src/application/services/event_bus.py`
+Permet de publier des événements métier et de notifier plusieurs handlers.
+Découple les actions principales des traitements secondaires.
+Utilisé pour réagir à des événements comme la création ou le changement d’état d’un colis.
+
