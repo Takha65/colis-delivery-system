@@ -30,17 +30,29 @@ sait :
 - **LSP** : tous les etats substituables via `ColisState`
 - **SRP** : chaque classe = 1 etat = 1 responsabilite
 
-### Avant / Apres
-Avant : dict `TRANSITIONS_VALIDES` + `if/else` implicite.
-Apres : polymorphisme, chaque etat encapsule sa logique.
+---
+
+## 3. Factory Method ✅
+
+**Emplacement** : `src/domain/factories/colis_factory.py`
+
+Creation de colis differenciee selon leur type (Standard, Fragile, Express).
+Chaque factory encapsule les regles metier specifiques a son type :
+- `StandardColisFactory` : aucune contrainte supplementaire
+- `FragileColisFactory` : poids <= 20 kg, volume <= 50 000 cm3
+- `ExpressColisFactory` : poids <= 10 kg, dimensions <= 50 cm
+
+### Avantages
+- **OCP** : ajouter un nouveau type = nouvelle factory, 0 modification
+- **SRP** : chaque factory = 1 type = 1 ensemble de regles
+- Template method : `creer()` est commun, `valider_contraintes()` est specifique
 
 ---
 
-## 3. Factory Method (A venir - M1.5)
-## 4. Strategy (A venir - M2)
-## 5. Adapter (A venir - M2)
-## 6. Proxy (A venir - M2)
-## 7. Facade (A venir - J4)
-## 8. Decorator (A venir - J4)
-## 9. Unit of Work (A venir - J4)
+## 4. Strategy (A venir - M2.2)
+## 5. Adapter (A venir - M2.3)
+## 6. Proxy (A venir - M2.3)
+## 7. Unit of Work (A venir - J4)
+## 8. Facade (A venir - J4)
+## 9. Decorator (A venir - J4)
 ## 10. Observer (A venir - J4)

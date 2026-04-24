@@ -2,45 +2,35 @@
 
 ## S - Single Responsibility Principle ✅
 
-Chaque use case a **une seule responsabilite** :
-- `CreerColisUseCase`, `ObtenirColisUseCase`, `ListerColisUseCase`,
-  `SupprimerColisUseCase`, `TransiterColisUseCase`, `ObtenirHistoriqueUseCase`
+Chaque use case a **une seule responsabilite** (CreerColisUseCase, etc.).
+Chaque **etat** (State Pattern) a une seule responsabilite.
+Chaque **factory** (Factory Method) encapsule les regles d'un seul type.
 
-Chaque **etat** (State Pattern) a **une seule responsabilite** : representer
-son comportement (transitions, modifiabilite, etc.).
-
-**Fichiers** : `src/application/use_cases/`, `src/domain/states/`
+**Fichiers** : `src/application/use_cases/`, `src/domain/states/`, `src/domain/factories/`
 
 ---
 
 ## O - Open/Closed Principle ✅
 
-Le **State Pattern** permet d'ajouter de nouveaux etats sans modifier le code
-existant. Il suffit de :
-1. Creer une nouvelle classe heritant de `ColisState`
-2. L'ajouter au registre `_ETATS`
+Demontre par deux patterns :
+1. **State Pattern** : ajouter un etat = nouvelle classe, 0 modification.
+2. **Factory Method** : ajouter un type de colis = nouvelle factory, 0 modification.
 
-Aucune autre ligne de code n'a besoin d'etre modifiee.
-
-**Fichiers** : `src/domain/states/colis_state.py`
+**Fichiers** : `src/domain/states/colis_state.py`, `src/domain/factories/colis_factory.py`
 
 ---
 
 ## L - Liskov Substitution Principle ✅
 
-Les 4 classes d'etat (`ColisCree`, `ColisEnTransit`, `ColisLivre`,
-`ColisConfirme`) sont **substituables** via `ColisState`. L'entite `Colis`
-manipule uniquement `ColisState`, sans connaitre le type concret.
+Les 4 classes d'etat et les 3 factories sont **substituables** via leurs
+classes abstraites (`ColisState`, `ColisFactory`). Les tests utilisent
+`@pytest.mark.parametrize` pour valider ce comportement uniforme.
 
-**Test de verification** : `tests/unit/domain/test_states.py` utilise
-`@pytest.mark.parametrize` pour faire tourner les memes tests sur tous les
-etats.
-
-**Fichiers** : `src/domain/states/colis_state.py`, `src/domain/entities/colis.py`
+**Fichiers** : `src/domain/states/`, `src/domain/factories/`
 
 ---
 
-## I - Interface Segregation Principle (A venir)
+## I - Interface Segregation Principle (A venir en M2.3)
 
 ---
 
@@ -49,10 +39,4 @@ etats.
 Les use cases dependent de l'abstraction `IColisRepository`, pas de
 l'implementation concrete `SQLAlchemyColisRepository`.
 
-```python
-class CreerColisUseCase:
-    def __init__(self, repository: IColisRepository) -> None:
-        self._repository = repository
-```
-
-**Fichiers** : `src/application/use_cases/`, `src/application/ports/colis_repository.py`
+**Fichiers** : `src/application/use_cases/`, `src/application/ports/`

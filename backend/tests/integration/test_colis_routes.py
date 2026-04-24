@@ -96,3 +96,42 @@ class TestSupprimerColisEndpoint:
     def test_delete_colis_inexistant_retourne_404(self, client):
         response = client.delete(f"/api/colis/{uuid4()}")
         assert response.status_code == 404
+
+
+class TestFactoryMethodViaAPI:
+    """Verifie que les contraintes des factories sont appliquees via l'API."""
+
+    def _payload_base(self) -> dict:
+        return {
+            "poids_kg": 5.0,
+            "longueur_cm": 20, "largeur_cm": 20, "hauteur_cm": 20,
+            "rue_origine": "100 rue A", "ville_origine": "Sherbrooke",
+            "code_postal_origine": "J1K 1A1",
+            "rue_destination": "200 rue B", "ville_destination": "Montreal",
+            "code_postal_destination": "H3Z 2Y7",
+        }
+
+    def test_creation_fragile_poids_trop_eleve_retourne_400(self, client):
+        payload = self._payload_base()
+        payload["type_colis"] = "FRAGILE"
+        payload["poids_kg"] = 25.0  # > 20 kg
+        response = client.post("/api/colis", json=payload)
+        assert response.status_code == 400
+        assert "fragile" in response.json()["detail"].lower()
+
+    def test_creation_express_dimension_trop_grande_retourne_400(self, client):
+        payload = self._payload_base()
+        payload["type_colis"] = "EXPRESS"
+        payload["longueur_cm"] = 60  # > 50 cm
+        response = client.post("/api/colis", json=payload)
+        assert response.status_code == 400
+        assert "express" in response.json()["detail"].lower()
+
+    def test_creation_express_valide(self, client):
+        payload = self._payload_base()
+        payload["type_colis"] = "EXPRESS"
+        payload["poids_kg"] = 3.0
+        payload["longueur_cm"] = 30
+        response = client.post("/api/colis", json=payload)
+        assert response.status_code == 201
+        assert response.json()["type_colis"] == "EXPRESS"
