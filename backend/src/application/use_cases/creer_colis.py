@@ -1,7 +1,8 @@
-"""Use case : creer un colis."""
+"""Use case : creer un colis (avec geocodage automatique des adresses)."""
 from dataclasses import dataclass
+from typing import Optional
 
-from src.application.ports import IColisRepository
+from src.application.ports import IColisRepository, IGeocodingService
 from src.domain.entities import Colis, TypeColis
 from src.domain.factories import get_factory
 from src.domain.value_objects import Adresse, Dimensions, Poids
@@ -27,33 +28,41 @@ class CreerColisCommand:
 
 
 class CreerColisUseCase:
-    """Cree un nouveau colis via la factory appropriee au type."""
+    """Cree un nouveau colis via la factory appropriee au type.
 
-    def __init__(self, repository: IColisRepository) -> None:
+    Enrichit les adresses avec leurs coordonnees GPS via le service de
+    geocodage (optionnel : si None, les colis sont crees sans coordonnees).
+    """
+
+    def __init__(
+        self,
+        repository: IColisRepository,
+        geocoding: Optional[IGeocodingService] = None,
+    ) -> None:
         self._repository = repository
+        self._geocoding = geocoding
 
     def execute(self, command: CreerColisCommand) -> Colis:
-        # Construire les value objects (validations generales)
         poids = Poids(valeur_kg=command.poids_kg)
         dimensions = Dimensions(
             longueur_cm=command.longueur_cm,
             largeur_cm=command.largeur_cm,
             hauteur_cm=command.hauteur_cm,
         )
-        adresse_origine = Adresse(
-            rue=command.rue_origine,
-            ville=command.ville_origine,
-            code_postal=command.code_postal_origine,
-            pays=command.pays_origine,
+
+        adresse_origine = self._construire_adresse(
+            command.rue_origine,
+            command.ville_origine,
+            command.code_postal_origine,
+            command.pays_origine,
         )
-        adresse_destination = Adresse(
-            rue=command.rue_destination,
-            ville=command.ville_destination,
-            code_postal=command.code_postal_destination,
-            pays=command.pays_destination,
+        adresse_destination = self._construire_adresse(
+            command.rue_destination,
+            command.ville_destination,
+            command.code_postal_destination,
+            command.pays_destination,
         )
 
-        # Deleguer a la factory du bon type (validations specifiques + creation)
         factory = get_factory(TypeColis(command.type_colis))
         colis = factory.creer(
             poids=poids,
@@ -63,3 +72,26 @@ class CreerColisUseCase:
         )
 
         return self._repository.save(colis)
+
+    def _construire_adresse(
+        self, rue: str, ville: str, code_postal: str, pays: str
+    ) -> Adresse:
+        """Construit une adresse, avec geocodage si service disponible."""
+        adresse = Adresse(
+            rue=rue, ville=ville, code_postal=code_postal, pays=pays
+        )
+        if self._geocoding is None:
+            return adresse
+
+        coord = self._geocoding.geocoder(adresse)
+        if coord is None:
+            return adresse  # Mode degrade : sans coordonnees
+
+        # Reconstruire avec coordonnees (VO immuable)
+        return Adresse(
+            rue=rue,
+            ville=ville,
+            code_postal=code_postal,
+            pays=pays,
+            coordonnees=coord,
+        )

@@ -7,11 +7,11 @@ from sqlalchemy.pool import StaticPool
 
 from src.infrastructure.persistence import Base
 from src.infrastructure.persistence.colis_model import ColisModel  # noqa: F401
+from src.infrastructure.persistence.historique_model import HistoriqueStatutModel  # noqa: F401
 
 
 @pytest.fixture
 def test_engine():
-    """Cree un engine SQLite en memoire pour les tests."""
     engine = create_engine(
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -24,7 +24,6 @@ def test_engine():
 
 @pytest.fixture
 def test_db_session(test_engine):
-    """Session SQLAlchemy pour une DB SQLite en memoire."""
     TestingSessionLocal = sessionmaker(
         bind=test_engine, autocommit=False, autoflush=False
     )
@@ -37,22 +36,23 @@ def test_db_session(test_engine):
 
 @pytest.fixture
 def client(test_db_session, test_engine, monkeypatch):
-    """Client HTTP de test avec DB SQLite en memoire."""
-    # 1. Monkey-patch l'engine PostgreSQL pour utiliser SQLite
     from src.infrastructure.persistence import database as db_module
     monkeypatch.setattr(db_module, "engine", test_engine)
 
-    # 2. Import de main APRES le monkey-patch
     from main import app
     from src.infrastructure.persistence.database import get_db
+    from src.interfaces.api.dependencies import get_geocoding_service
+    from tests.fakes.fake_geocoding_service import FakeGeocodingService
 
-    # 3. Override de la session DB pour les requetes HTTP
     def override_get_db():
         yield test_db_session
 
-    app.dependency_overrides[get_db] = override_get_db
+    def override_geocoding():
+        return FakeGeocodingService()  # Fake au lieu de Nominatim
 
-    # 4. TestClient declenche le startup, qui utilise l'engine patche (SQLite)
+    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_geocoding_service] = override_geocoding
+
     with TestClient(app) as test_client:
         yield test_client
 

@@ -1,0 +1,26 @@
+{
+  "noeuds": [
+    {"id": "SHE", "nom": "Sherbrooke", "latitude": 45.4000, "longitude": -71.9000},
+    {"id": "MAG", "nom": "Magog", "latitude": 45.2667, "longitude": -72.1500},
+    {"id": "GRA", "nom": "Granby", "latitude": 45.4000, "longitude": -72.7333},
+    {"id": "DRU", "nom": "Drummondville", "latitude": 45.8833, "longitude": -72.4833},
+    {"id": "MTL", "nom": "Montreal", "latitude": 45.5017, "longitude": -73.5673},
+    {"id": "LON", "nom": "Longueuil", "latitude": 45.5333, "longitude": -73.5167},
+    {"id": "QUE", "nom": "Quebec", "latitude": 46.8139, "longitude": -71.2080},
+    {"id": "TRO", "nom": "Trois-Rivieres", "latitude": 46.3432, "longitude": -72.5432}
+  ],
+  "aretes": [
+    {"source": "SHE", "cible": "MAG", "distance_km": 24, "temps_minutes": 22, "charge_trafic": 0.2},
+    {"source": "SHE", "cible": "GRA", "distance_km": 79, "temps_minutes": 62, "charge_trafic": 0.3},
+    {"source": "SHE", "cible": "DRU", "distance_km": 85, "temps_minutes": 68, "charge_trafic": 0.25},
+    {"source": "MAG", "cible": "GRA", "distance_km": 54, "temps_minutes": 45, "charge_trafic": 0.2},
+    {"source": "GRA", "cible": "MTL", "distance_km": 80, "temps_minutes": 68, "charge_trafic": 0.55},
+    {"source": "GRA", "cible": "DRU", "distance_km": 68, "temps_minutes": 55, "charge_trafic": 0.3},
+    {"source": "DRU", "cible": "MTL", "distance_km": 105, "temps_minutes": 78, "charge_trafic": 0.6},
+    {"source": "DRU", "cible": "TRO", "distance_km": 40, "temps_minutes": 35, "charge_trafic": 0.2},
+    {"source": "MTL", "cible": "LON", "distance_km": 10, "temps_minutes": 15, "charge_trafic": 0.7},
+    {"source": "MTL", "cible": "TRO", "distance_km": 140, "temps_minutes": 95, "charge_trafic": 0.4},
+    {"source": "TRO", "cible": "QUE", "distance_km": 130, "temps_minutes": 90, "charge_trafic": 0.3},
+    {"source": "MTL", "cible": "QUE", "distance_km": 260, "temps_minutes": 180, "charge_trafic": 0.5}
+  ]
+}

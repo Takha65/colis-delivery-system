@@ -5,10 +5,22 @@ from src.domain.exceptions.colis_exceptions import (
     InvalidColisError,
     InvalidTransitionError,
 )
+from src.domain.exceptions.routage_exceptions import (
+    CapaciteDepasseeError,
+    GrapheInvalideError,
+    NoeudIntrouvableError,
+    RoutageError,
+    RouteImpossibleError,
+)
 
 __all__ = [
     "ColisError",
     "ColisNotFoundError",
     "InvalidColisError",
     "InvalidTransitionError",
+    "RoutageError",
+    "GrapheInvalideError",
+    "NoeudIntrouvableError",
+    "RouteImpossibleError",
+    "CapaciteDepasseeError",
 ]

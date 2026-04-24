@@ -84,3 +84,47 @@ class TestSupprimerColis:
     def test_leve_exception_si_inexistant(self, repository) -> None:
         with pytest.raises(ColisNotFoundError):
             SupprimerColisUseCase(repository).execute(uuid4())
+
+
+class TestCreerColisAvecGeocodage:
+    """Verifie l'integration du service de geocodage dans CreerColisUseCase."""
+
+    def test_cree_colis_avec_coordonnees_si_geocoding_disponible(
+        self, repository, command_valide
+    ) -> None:
+        from tests.fakes.fake_geocoding_service import FakeGeocodingService
+        from src.domain.value_objects import Coordonnees
+
+        geocoding = FakeGeocodingService(
+            coordonnees_par_defaut=Coordonnees(latitude=45.4, longitude=-71.9)
+        )
+        use_case = CreerColisUseCase(repository, geocoding)
+
+        colis = use_case.execute(command_valide)
+
+        assert colis.adresse_origine.coordonnees is not None
+        assert colis.adresse_origine.coordonnees.latitude == 45.4
+        assert colis.adresse_destination.coordonnees is not None
+
+    def test_cree_colis_sans_coordonnees_si_geocoding_echoue(
+        self, repository, command_valide
+    ) -> None:
+        from tests.fakes.fake_geocoding_service import FakeGeocodingService
+
+        geocoding = FakeGeocodingService(doit_echouer=True)
+        use_case = CreerColisUseCase(repository, geocoding)
+
+        colis = use_case.execute(command_valide)
+
+        # Mode degrade : colis cree meme si geocoding echoue
+        assert colis.adresse_origine.coordonnees is None
+
+    def test_cree_colis_sans_geocoding_service(
+        self, repository, command_valide
+    ) -> None:
+        """Backward compat : sans service, colis cree normalement."""
+        use_case = CreerColisUseCase(repository, geocoding=None)
+
+        colis = use_case.execute(command_valide)
+
+        assert colis.adresse_origine.coordonnees is None

@@ -1,4 +1,8 @@
 """Use cases de la couche application."""
+from src.application.use_cases.calculer_route import (
+    CalculerRouteCommand,
+    CalculerRouteUseCase,
+)
 from src.application.use_cases.creer_colis import (
     CreerColisCommand,
     CreerColisUseCase,
@@ -13,6 +17,8 @@ from src.application.use_cases.transiter_colis import (
 )
 
 __all__ = [
+    "CalculerRouteCommand",
+    "CalculerRouteUseCase",
     "CreerColisCommand",
     "CreerColisUseCase",
     "ListerColisUseCase",

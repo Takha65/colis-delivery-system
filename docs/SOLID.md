@@ -1,42 +1,28 @@
 # Principes SOLID appliques
 
 ## S - Single Responsibility Principle ✅
-
-Chaque use case a **une seule responsabilite** (CreerColisUseCase, etc.).
-Chaque **etat** (State Pattern) a une seule responsabilite.
-Chaque **factory** (Factory Method) encapsule les regles d'un seul type.
-
-**Fichiers** : `src/application/use_cases/`, `src/domain/states/`, `src/domain/factories/`
-
----
+- Chaque use case = 1 responsabilite
+- Chaque etat (State) = 1 role
+- Chaque factory = 1 type de colis
+- Adapter = traduction, Proxy = cache (responsabilites separees)
 
 ## O - Open/Closed Principle ✅
-
-Demontre par deux patterns :
-1. **State Pattern** : ajouter un etat = nouvelle classe, 0 modification.
-2. **Factory Method** : ajouter un type de colis = nouvelle factory, 0 modification.
-
-**Fichiers** : `src/domain/states/colis_state.py`, `src/domain/factories/colis_factory.py`
-
----
+- State Pattern : ajouter un etat = nouvelle classe, 0 modification
+- Factory Method : ajouter un type = nouvelle factory
+- Strategy : ajouter un algorithme = nouvelle strategie
 
 ## L - Liskov Substitution Principle ✅
+- Etats substituables via ColisState
+- Factories substituables via ColisFactory
+- Strategies substituables via IStrategieRoutage
+- Proxy et Adapter substituables via IGeocodingService
+Tests parametres dans les fichiers test_*.py demontrent ce comportement.
 
-Les 4 classes d'etat et les 3 factories sont **substituables** via leurs
-classes abstraites (`ColisState`, `ColisFactory`). Les tests utilisent
-`@pytest.mark.parametrize` pour valider ce comportement uniforme.
-
-**Fichiers** : `src/domain/states/`, `src/domain/factories/`
-
----
-
-## I - Interface Segregation Principle (A venir en M2.3)
-
----
+## I - Interface Segregation Principle ✅
+- IColisRepository separe de IGeocodingService separe de IStrategieRoutage
+- Chaque client ne depend que des methodes qu'il utilise
 
 ## D - Dependency Inversion Principle ✅
-
-Les use cases dependent de l'abstraction `IColisRepository`, pas de
-l'implementation concrete `SQLAlchemyColisRepository`.
-
-**Fichiers** : `src/application/use_cases/`, `src/application/ports/`
+- Use cases dependent d'interfaces (IColisRepository, IGeocodingService)
+- Les implementations concretes (SQLAlchemy, Nominatim) sont injectees
+- Fakes utilises en tests pour decouplage total
