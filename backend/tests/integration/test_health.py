@@ -1,4 +1,5 @@
 """Tests d'integration du endpoint health."""
+
 from fastapi.testclient import TestClient
 
 from main import app

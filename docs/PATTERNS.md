@@ -1,22 +1,36 @@
 # Design Patterns utilises
 
-Ce document recense les design patterns utilises dans le projet.
+## 1. Repository Pattern ✅
+`src/application/ports/colis_repository.py` + `src/infrastructure/persistence/`
+Separation metier/persistance. Demontrer DIP.
 
-**Exigence** : au moins 8 patterns GoF distincts.
-**Realise** : 10 patterns (documentation en cours).
+## 2. State Pattern ✅
+`src/domain/states/colis_state.py`
+4 classes polymorphes pour le cycle de vie du colis.
+Demontrer OCP + LSP + SRP.
 
-## Vue d'ensemble
+## 3. Factory Method ✅
+`src/domain/factories/colis_factory.py`
+3 factories (Standard/Fragile/Express) avec regles metier dediees.
+Demontrer OCP + SRP.
 
-| # | Pattern | Categorie | Module | Statut |
-|---|---------|-----------|--------|--------|
-| 1 | Repository | Architectural | M1 | A faire |
-| 2 | Factory Method | Creationnel | M1 | A faire |
-| 3 | State | Comportemental | M1 | A faire |
-| 4 | Strategy | Comportemental | M2 | A faire |
-| 5 | Adapter | Structurel | M2 | A faire |
-| 6 | Proxy | Structurel | M2 | A faire |
-| 7 | Facade | Structurel | Transversal | A faire |
-| 8 | Decorator | Structurel | Transversal | A faire |
-| 9 | Unit of Work | Architectural | Transversal | A faire |
-| 10 | Observer | Comportemental | Transversal | A faire |
+## 4. Strategy Pattern ✅
+`src/infrastructure/routage/` + `src/application/ports/strategie_routage.py`
+3 algorithmes interchangeables (Dijkstra, Plus proche voisin, Greedy)
+avec selecteur intelligent.
+Demontrer OCP + LSP.
 
+## 5. Adapter ✅
+`src/infrastructure/external/nominatim_adapter.py`
+Adapte l'API HTTP Nominatim a notre interface IGeocodingService.
+Le domaine ne connait rien de Nominatim.
+
+## 6. Proxy ✅
+`src/infrastructure/external/geocoding_cache_proxy.py`
+Enveloppe le NominatimAdapter pour ajouter un cache in-memory,
+sans changer l'interface. Respecte le rate limit Nominatim.
+
+## 7. Unit of Work (A venir - J4)
+## 8. Facade (A venir - J4)
+## 9. Decorator (A venir - J4)
+## 10. Observer (A venir - J4)

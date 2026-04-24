@@ -57,3 +57,5 @@ logs/
 
 # Alembic
 backend/alembic/__pycache__/
+
+docs/doc_perso.md
